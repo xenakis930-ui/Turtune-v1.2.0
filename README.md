@@ -1,4 +1,4 @@
-# Turtune 🐢 — YouTube audio-only, minimalista en azul turquesa · by Xenakis165
+# Turtune 🐢 — YouTube audio-only - by Xenakis165
 
 Cliente de escritorio nativo y ligero que **reproduce exclusivamente el flujo de
 audio de YouTube** (formatos `m4a`/AAC ~128 kbps u `opus` ~160 kbps). Jamás se
