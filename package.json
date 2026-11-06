@@ -1,6 +1,6 @@
 {
   "name": "turtune",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Turtune — cliente de escritorio estilo Spotify que reproduce SOLO audio de YouTube (audio-only streaming). Tauri/Electron + React + yt-dlp.",
   "author": "Xenakis165",
   "license": "MIT",
