@@ -94,7 +94,7 @@ Al arrancar, Turtune comprueba si hay una versión nueva publicada en **GitHub R
 
 ```powershell
 npm.cmd run dist
-# → release\Turtune-Setup-1.1.0.exe   (instalación por usuario, con atajo y
+# → release\Turtune-Setup-1.2.0.exe   (instalación por usuario, con atajo y
 #   desinstalador; sin firma de código → Windows SmartScreen mostrará aviso)
 ```
 
