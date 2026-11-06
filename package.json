@@ -48,8 +48,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "Xenakis165",
-        "repo": "turtune"
+        "owner": "xenakis930-ui",
+        "repo": "Turtune-v1.2.0"
       }
     ]
   },
