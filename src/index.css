@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: #101a1b;
+  color: #fff;
+  font-family: 'Figtree', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.no-select {
+  user-select: none;
+}
+
+/* ---------- Ambiente: glow turquesa sutil + grafito frío ---------- */
+.main-ambient {
+  background-image: radial-gradient(
+    130% 55% at 50% -12%,
+    rgba(21, 211, 162, 0.13),
+    rgba(90, 230, 136, 0.03) 42%,
+    transparent 62%
+  );
+  background-color: #101a1b;
+}
+/* Línea de acento ultra sutil (borde superior del reproductor) */
+.accent-hairline {
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(21, 211, 162, 0.42) 32%,
+    rgba(90, 230, 136, 0.42) 68%,
+    transparent
+  );
+}
+
+/* ---------- Scrollbars estilo Spotify ---------- */
+.scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.scroll-area::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+}
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ---------- Range inputs (seek / volumen) ---------- */
+.oct-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    #15d3a2 0 var(--fill, 50%),
+    #66798a var(--fill, 50%) var(--buffer, var(--fill, 50%)),
+    #3a4754 var(--buffer, var(--fill, 50%)) 100%
+  );
+  transition: background 0.08s linear;
+}
+.oct-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+.oct-range:hover::-webkit-slider-thumb,
+.oct-range:focus-visible::-webkit-slider-thumb,
+.oct-range:active::-webkit-slider-thumb {
+  opacity: 1;
+  transform: scale(1);
+}
+.oct-range:hover {
+  background: linear-gradient(
+    to right,
+    #4fe3b7 0 var(--fill, 50%),
+    #858585 var(--fill, 50%) var(--buffer, var(--fill, 50%)),
+    #5a5a5a var(--buffer, var(--fill, 50%)) 100%
+  );
+}
+.oct-range:focus-visible {
+  outline: 2px solid #15d3a2;
+  outline-offset: 4px;
+}
+.oct-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  opacity: 0;
+}
+.oct-range:hover::-moz-range-thumb {
+  opacity: 1;
+}
+
+/* ---------- Skeleton shimmer ---------- */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #18262a;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.09),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- Ecualizador animado (pista suena ahora) ---------- */
+.eq-bar {
+  transform-origin: bottom;
+  border-radius: 1px;
+  background: #15d3a2;
+  animation: eq 0.9s ease-in-out infinite;
+}
+.eq-bar:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.eq-bar:nth-child(3) {
+  animation-delay: 0.34s;
+}
+.eq-bar:nth-child(4) {
+  animation-delay: 0.1s;
+}
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.28);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-paused .eq-bar {
+  animation-play-state: paused;
+  transform: scaleY(0.28);
+}
+
+/* ---------- Utilitarios ---------- */
+.card-lift {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.card-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid #15d3a2;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

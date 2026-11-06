@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test-build:
+    runs-on: windows-latest
+    env:
+      # No necesitamos descargar el binario de Electron en CI (no se lanza la GUI)
+      ELECTRON_SKIP_BINARY_DOWNLOAD: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Tests del núcleo (sin red)
+        run: npm test
+
+      - name: Build del frontend
+        run: npm run build
