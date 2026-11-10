@@ -47,7 +47,7 @@ export default function PlayerBar() {
   return (
     <footer
       aria-label="Reproductor"
-      className="relative grid h-[76px] shrink-0 grid-cols-[minmax(180px,1fr)_minmax(0,2.2fr)_minmax(160px,1fr)] items-center gap-4 border-t border-white/5 bg-[#121e20] px-4"
+      className="relative flex flex-col gap-2 border-t border-white/5 bg-[#121e20] px-3 py-2 sm:grid sm:h-[76px] sm:grid-cols-[minmax(160px,1fr)_minmax(0,2fr)_minmax(140px,1fr)] sm:items-center sm:gap-4 sm:px-4 sm:py-0"
     >
       {/* Acento turquesa ultra sutil en el borde superior */}
       <div aria-hidden className="accent-hairline pointer-events-none absolute inset-x-0 top-0 h-px" />
@@ -108,7 +108,7 @@ export default function PlayerBar() {
             aria-pressed={shuffle}
             aria-label="Aleatorio"
             title="Aleatorio"
-            className={`relative transition hover:scale-110 ${shuffle ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
+            className={`relative transition hover:scale-110 hidden sm:inline-flex ${shuffle ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
           >
             <Shuffle size={17} strokeWidth={2.2} />
             {shuffle && <span className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[#15d3a2]" />}
@@ -133,7 +133,7 @@ export default function PlayerBar() {
               isLoading ? 'Cargando…' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducción' : 'Reproducir'
             }
             title={isError ? 'Reintentar reproducción' : undefined}
-            className="grid h-10 w-10 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30"
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30 sm:h-10 sm:w-10"
           >
             {isLoading ? (
               <Loader2 size={20} className="animate-spin" aria-hidden />
@@ -163,7 +163,7 @@ export default function PlayerBar() {
             aria-pressed={repeat !== 'off'}
             aria-label={repeat === 'one' ? 'Repetir una' : repeat === 'all' ? 'Repetir todo' : 'Repetir desactivado'}
             title={repeat === 'one' ? 'Repetir una' : repeat === 'all' ? 'Repetir todo' : 'Repetir'}
-            className={`relative transition hover:scale-110 ${repeat !== 'off' ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
+            className={`relative transition hover:scale-110 hidden sm:inline-flex ${repeat !== 'off' ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
           >
             <RepeatIcon size={17} strokeWidth={2.2} />
             {repeat !== 'off' && <span className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[#15d3a2]" />}
@@ -229,7 +229,7 @@ export default function PlayerBar() {
             value={muted ? 0 : Math.round(volume * 100)}
             onChange={(e) => setVolume(Number(e.target.value) / 100)}
             aria-label="Volumen"
-            className="oct-range w-24"
+            className="oct-range w-24 hidden sm:block"
             style={{ '--fill': `${muted ? 0 : Math.round(volume * 100)}%` }}
           />
         </div>

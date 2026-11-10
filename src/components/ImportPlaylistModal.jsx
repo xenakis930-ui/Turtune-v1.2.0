@@ -104,7 +104,7 @@ export default function ImportPlaylistModal() {
         className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-[2px]"
       />
 
-      <div className="relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141f22] shadow-2xl">
+      <div className="relative flex max-h-[100vh] w-full max-w-lg flex-col overflow-hidden rounded-none border border-white/10 bg-[#141f22] shadow-2xl sm:max-h-[85vh] sm:rounded-2xl">
         {/* Cabecera */}
         <div className="flex items-center justify-between border-b border-white/5 px-6 py-4">
           <div className="flex items-center gap-3">

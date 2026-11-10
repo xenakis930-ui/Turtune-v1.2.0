@@ -10,9 +10,10 @@ import QueuePanel from './components/QueuePanel'
 import ToastStack from './components/ToastStack'
 import ShortcutsOverlay from './components/ShortcutsOverlay'
 import ImportPlaylistModal from './components/ImportPlaylistModal'
+import MobileNav from './components/MobileNav'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore } from './store/usePlayerStore'
-import { initEngine } from './audio/engine'
+import { initEngine, togglePlay, next, previous } from './audio/engine'
 
 /**
  * Layout raíz estilo Spotify:
@@ -30,6 +31,13 @@ export default function App() {
 
   useEffect(() => {
     initEngine()
+    // Bandeja del sistema (solo en la app de escritorio)
+    const off = []
+    if (window.turtune?.onTray) {
+      off.push(window.turtune.onTray('play', () => togglePlay()))
+      off.push(window.turtune.onTray('next', () => next(false)))
+      off.push(window.turtune.onTray('previous', () => previous()))
+    }
     // Aviso único si la cola persistida se restauró
     const restored = usePlayerStore.getState().current
     if (restored) {
@@ -38,11 +46,12 @@ export default function App() {
         `Sesión restaurada — pulsa Play para seguir con «${String(restored.title).slice(0, 48)}»`,
       )
     }
+    return () => off.forEach((fn) => { try { fn() } catch { /* noop */ } })
   }, [])
 
   return (
     <div className="no-select flex h-screen w-screen flex-col overflow-hidden bg-base text-white">
-      <div className="flex min-h-0 flex-1 gap-2 p-2">
+      <div className="flex min-h-0 flex-1">
         <Sidebar />
 
         <main className="main-ambient flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/[0.06] shadow-[0_18px_44px_rgba(0,0,0,0.35)]">
@@ -57,6 +66,7 @@ export default function App() {
       </div>
 
       <PlayerBar />
+      <MobileNav />
       <QueuePanel />
       <ToastStack />
       <ShortcutsOverlay />

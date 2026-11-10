@@ -26,7 +26,7 @@ export default function Sidebar() {
   }, [])
 
   return (
-    <aside className="flex w-[236px] shrink-0 flex-col gap-2 rounded-xl border border-white/[0.06] bg-[#0c1718] p-4">
+    <aside className="hidden lg:flex w-[236px] shrink-0 flex-col gap-2 rounded-xl border border-white/[0.06] bg-[#0c1718] p-4">
       {/* Logo */}
       <div className="mb-2 flex items-center gap-2.5 px-1">
         <img

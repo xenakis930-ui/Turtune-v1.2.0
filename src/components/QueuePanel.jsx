@@ -18,10 +18,19 @@ export default function QueuePanel() {
   const upcoming = queue.map((track, i) => ({ track, i })).slice(index + 1)
 
   return (
-    <aside
-      aria-label="Cola de reproducción"
-      aria-hidden={!open}
-      className={`fixed bottom-[76px] right-0 top-0 z-40 flex w-[340px] max-w-[92vw] flex-col border-l border-white/5 bg-[#141f22] shadow-2xl transition-transform duration-300 ease-out ${
+    <>
+      {open && (
+        <button
+          type="button"
+          aria-label="Cerrar cola"
+          onClick={toggleQueue}
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[1px] sm:hidden"
+        />
+      )}
+      <aside
+        aria-label="Cola de reproducción"
+        aria-hidden={!open}
+      className={`fixed inset-0 z-40 flex w-full flex-col border-white/5 bg-[#141f22] shadow-2xl transition-transform duration-300 ease-out sm:bottom-[76px] sm:top-0 sm:w-[340px] sm:max-w-[92vw] sm:border-l ${
         open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
       }`}
     >
@@ -148,5 +157,6 @@ export default function QueuePanel() {
         reproducción se detiene.
       </div>
     </aside>
+    </>
   )
 }

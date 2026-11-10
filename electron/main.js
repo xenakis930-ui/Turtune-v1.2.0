@@ -1,6 +1,6 @@
 'use strict'
 
-const { app, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const path = require('node:path')
 const { searchTracks } = require('./core/search')
@@ -19,11 +19,51 @@ const DEV_URL = process.env.VITE_DEV_URL || 'http://localhost:5173'
 
 /** @type {BrowserWindow | null} */
 let mainWindow = null
+app.isQuitting = false
+let tray = null
 
 function sendUpdateStatus(type, payload) {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('update:status', { type, payload })
   }
+}
+
+/** Bandeja del sistema: minimizar a tray + controles rápidos. */
+function createTray() {
+  if (tray) return
+  const iconPath = path.join(__dirname, '..', 'build', 'icon.png')
+  let icon
+  try {
+    icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
+  } catch {
+    icon = nativeImage.createEmpty()
+  }
+  tray = new Tray(icon)
+  tray.setToolTip('Turtune — audio-only')
+
+  const showWindow = () => {
+    if (!mainWindow) return
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.show()
+    mainWindow.focus()
+  }
+
+  const template = [
+    { label: 'Turtune', enabled: false },
+    { type: 'separator' },
+    { label: 'Play / Pausa', click: () => mainWindow?.webContents.send('tray:play') },
+    { label: 'Siguiente', click: () => mainWindow?.webContents.send('tray:next') },
+    { label: 'Anterior', click: () => mainWindow?.webContents.send('tray:previous') },
+    { type: 'separator' },
+    { label: 'Mostrar Turtune', click: showWindow },
+    { label: 'Salir', click: () => { app.isQuitting = true; app.quit() } },
+  ]
+  tray.setContextMenu(Menu.buildFromTemplate(template))
+  tray.on('click', showWindow)
+}
+
+function destroyTray() {
+  if (tray) { tray.destroy(); tray = null }
 }
 
 /** Comprobación silenciosa al arrancar (solo empaquetado; en dev no molesta). */
@@ -87,6 +127,14 @@ async function createWindow() {
     return { action: 'deny' }
   })
   mainWindow.webContents.on('will-navigate', (e) => e.preventDefault())
+
+  // Minimizar a la bandeja en vez de cerrar (Spotify-like)
+  mainWindow.on('close', (e) => {
+    if (!app.isQuitting) {
+      e.preventDefault()
+      mainWindow.hide()
+    }
+  })
 
   if (isDev) {
     await mainWindow.loadURL(DEV_URL)
@@ -252,9 +300,12 @@ if (!gotLock) {
   app.on('second-instance', () => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.show()
       mainWindow.focus()
     }
   })
+
+  app.on('before-quit', () => { app.isQuitting = true })
 
   app.whenReady().then(async () => {
     try {
@@ -265,6 +316,7 @@ if (!gotLock) {
 
     registerIpc()
     await createWindow()
+    createTray()
     setupAutoUpdater()
 
     app.on('activate', () => {
@@ -273,9 +325,14 @@ if (!gotLock) {
   })
 
   app.on('window-all-closed', () => {
-    stopProxy()
-    app.quit()
+    // Con bandeja del sistema, la app sigue viva en tray; solo se cierra si el
+    // usuario eligió "Salir" (app.isQuitting = true).
+    if (app.isQuitting) {
+      destroyTray()
+      stopProxy()
+      app.quit()
+    }
   })
 
-  app.on('quit', stopProxy)
+  app.on('quit', () => { destroyTray(); stopProxy() })
 }

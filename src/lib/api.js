@@ -1,51 +1,80 @@
 /**
- * api.js — Frontera única entre la UI y el proceso main (preload `window.turtune`).
- * En un navegador normal (sin Electron) cae en modo demo con datos embebidos
- * para poder previsualizar la interfaz; en escritorio siempre usa el backend real.
+ * api.js — Frontera única entre la UI y el backend (Electron IPC o HTTP).
+ *
+ * Modos:
+ *   1) Desktop (Electron): window.turtune (IPC al proceso main).
+ *   2) Backend (Android / web): HTTP a la URL configurada en Ajustes.
+ *   3) Demo (navegador sin backend): datos embebidos + WAV silencioso.
  */
 
+import { getBackendUrl, hasBackend, backendUrl } from './backend'
 import { DEMO_TRACKS, demoSearch } from '../demo/mock'
 import { makeSilentWavDataUri } from '../demo/silentWav'
 
 const hasBridge = () => typeof window !== 'undefined' && !!window.turtune
-
 export const isDesktop = hasBridge()
 
-/** @returns {Promise<{ok:true, items:any[]} | {ok:false, error:string}>} */
+/** Fetch JSON con manejo de errores uniforme. */
+export async function backendFetch(path, init) {
+  const url = backendUrl(path)
+  if (!url) throw new Error('Backend no configurado')
+  const res = await fetch(url, init)
+  let data = null
+  try { data = await res.json() } catch { /* sin cuerpo */ }
+  if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`)
+  return data
+}
+
+/* ---------- Búsqueda ---------- */
 export async function searchBackend(query) {
   if (hasBridge()) return window.turtune.search(query)
-  await new Promise((r) => setTimeout(r, 380)) // latencia simulada
+  if (hasBackend()) {
+    const data = await backendFetch(`/search?q=${encodeURIComponent(String(query ?? ''))}&limit=18`)
+    return { ok: true, items: data?.items ?? [] }
+  }
+  await new Promise((r) => setTimeout(r, 380))
   return { ok: true, items: demoSearch(query) }
 }
 
-/** URL reproducible por el <audio>: proxy local (Electron) o WAV silencioso (demo). */
+/* ---------- URL de stream reproducible ---------- */
 export async function getStreamUrl(videoId) {
   if (hasBridge()) return window.turtune.getStreamUrl(videoId)
+  if (hasBackend()) return backendUrl(`/stream/${encodeURIComponent(videoId)}`)
   return makeSilentWavDataUri(6)
 }
 
-/**
- * Importa metadatos de una playlist pública de YouTube.
- * En demo devuelve una muestra local.
- */
+/* ---------- Importar playlist ---------- */
 export async function importPlaylist(url) {
   if (hasBridge()) return window.turtune.importPlaylist(url)
+  if (hasBackend()) {
+    const data = await backendFetch('/playlist/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    })
+    return { ok: true, title: data?.title, items: data?.items ?? [] }
+  }
   await new Promise((r) => setTimeout(r, 700))
   return { ok: true, title: 'Playlist demo', items: DEMO_TRACKS.slice(0, 6) }
 }
 
+/* ---------- Versión ---------- */
 export async function getAppVersion() {
   if (hasBridge()) return window.turtune.version()
-  return 'demo'
+  if (hasBackend()) {
+    const data = await backendFetch('/health')
+    return data?.version ?? 'backend'
+  }
+  return 'web-demo'
 }
 
-/**
- * Cuenta de YouTube (OAuth readonly). En navegador (demo) devuelve estados
- * "sin vincular" y la UI muestra que solo está disponible en la app de escritorio.
- */
+/* ---------- Cuenta de YouTube (OAuth readonly) ---------- */
 export const account = {
-  status: () =>
-    hasBridge() ? window.turtune.account.status() : Promise.resolve({ configured: false, connected: false, clientId: '' }),
+  status: () => {
+    if (hasBridge()) return window.turtune.account.status()
+    if (hasBackend()) return backendFetch('/account/status').catch(() => ({ configured: false, connected: false, clientId: '', cookieBrowser: 'none' }))
+    return Promise.resolve({ configured: false, connected: false, clientId: '', cookieBrowser: 'none' })
+  },
   saveConfig: (cfg) =>
     hasBridge() ? window.turtune.account.saveConfig(cfg) : Promise.resolve({ ok: false, error: 'Disponible solo en la app de escritorio' }),
   deleteConfig: () =>
@@ -64,16 +93,6 @@ export const account = {
     hasBridge() ? window.turtune.account.playlistTracks(playlistId, max) : Promise.resolve({ ok: true, items: [] }),
 }
 
-/** Actualizaciones automáticas (GitHub Releases). En demo no hay canal. */
-export const updater = {
-  available: hasBridge(),
-  check: () =>
-    hasBridge() ? window.turtune.updates.check() : Promise.resolve({ ok: false, available: false, error: 'Solo en la app de escritorio' }),
-  quitAndInstall: () =>
-    hasBridge() ? window.turtune.updates.quitAndInstall() : Promise.resolve({ ok: false }),
-  onStatus: (cb) => (hasBridge() ? window.turtune.updates.onStatus(cb) : () => {}),
-}
-
 export const windowControls = {
   minimize: () => window.turtune?.window?.minimize(),
   toggleMaximize: () => window.turtune?.window?.toggleMaximize(),
@@ -81,4 +100,12 @@ export const windowControls = {
   available: hasBridge(),
 }
 
+export const updater = {
+  available: hasBridge(),
+  check: () => (hasBridge() ? window.turtune.updates.check() : Promise.resolve({ ok: false, available: false, error: 'Solo en la app de escritorio' })),
+  quitAndInstall: () => (hasBridge() ? window.turtune.updates.quitAndInstall() : Promise.resolve({ ok: false })),
+  onStatus: (cb) => (hasBridge() ? window.turtune.updates.onStatus(cb) : () => {}),
+}
+
 export { DEMO_TRACKS }
+export { getBackendUrl, setBackendUrl, hasBackend, backendUrl } from './backend'

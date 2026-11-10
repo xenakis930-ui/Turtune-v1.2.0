@@ -40,7 +40,13 @@ contextBridge.exposeInMainWorld('turtune', {
     return `http://127.0.0.1:${port}/stream/${encodeURIComponent(videoId)}`
   },
 
-  version: () => ipcRenderer.invoke('app:version'),
+  /** Bandeja del sistema: suscribirse a acciones (play/next/previous). */
+  onTray: (action, cb) => {
+    const channel = `tray:${String(action)}`
+    const listener = () => { try { cb() } catch { /* noop */ } }
+    ipcRenderer.on(channel, listener)
+    return () => ipcRenderer.removeListener(channel, listener)
+  },
 
   /** Actualizaciones automáticas (GitHub Releases). */
   updates: {

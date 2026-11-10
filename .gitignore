@@ -1,6 +1,18 @@
 node_modules/
 dist/
 release/
+build/
 *.log
 .DS_Store
 .tools-cache/
+
+# Backend (Node)
+server/node_modules/
+server/data/
+
+# Android (Capacitor)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/

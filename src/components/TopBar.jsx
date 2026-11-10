@@ -31,7 +31,7 @@ export default function TopBar() {
   }, [clearQuery])
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-white/5 bg-black/20 px-4">
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-white/5 bg-black/20 px-4 pt-[env(safe-area-inset-top)]">
       {/* Historial (deshabilitado: una sola sesión de navegación) */}
       <div className="hidden items-center gap-2 sm:flex" aria-hidden>
         <span className="grid h-8 w-8 place-items-center rounded-full bg-black/60 text-[#72868f]">

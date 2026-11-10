@@ -17,6 +17,29 @@ descarga ni decodifica el vídeo: menor consumo de red, RAM y CPU.
 
 ---
 
+## Backend para Android (nuevo: `server/`)
+
+Mismo núcleo, expuesto como API HTTP. Reutiliza `electron/core/` al 100%.
+
+```bash
+cd server
+npm install
+npm start
+# → http://localhost:8787/health
+# → http://localhost:8787/search?q=pop%20hits
+# → http://localhost:8787/stream/4VR-6AS0-l4
+```
+
+Emulador Android → PC: `http://10.0.2.2:8787`.
+
+Despliegue en VPS: `docker build -t turtune-api . && docker run -d -p 8787:8787 -v turtune-data:/data turtune-api` + reverse proxy HTTPS.
+
+Variables: `TURTUNE_API_TOKEN` (si se define, todas las rutas exigen `Authorization: Bearer <token>` — **actívalo si sale a internet**). `TURTUNE_DATA_DIR` (default `./data`).
+
+Smoke test (sin red): `npm run test:smoke`.
+
+---
+
 ## Estructura del proyecto
 
 ```

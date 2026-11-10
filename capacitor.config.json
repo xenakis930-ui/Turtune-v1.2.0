@@ -1,0 +1,13 @@
+{
+  "appId": "app.turtune.app",
+  "appName": "Turtune",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true,
+    "hostname": "localhost",
+    "androidScheme": "http"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

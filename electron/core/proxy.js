@@ -199,4 +199,4 @@ function getPort() {
   return port
 }
 
-module.exports = { startProxy, stopProxy, getPort }
+module.exports = { startProxy, stopProxy, getPort, handleRequest }

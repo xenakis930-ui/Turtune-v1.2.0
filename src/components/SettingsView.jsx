@@ -4,7 +4,7 @@ import {
   ExternalLink, ShieldCheck, Plug, Unplug, Library, ChevronDown, Globe,
   RefreshCw, Rocket,
 } from 'lucide-react'
-import { account, isDesktop, updater, getAppVersion } from '../lib/api'
+import { account, isDesktop, updater, getAppVersion, getBackendUrl, setBackendUrl, hasBackend, backendFetch } from '../lib/api'
 import { usePlayerStore } from '../store/usePlayerStore'
 
 const LINKS = {
@@ -33,6 +33,9 @@ export default function SettingsView() {
   const [sessionError, setSessionError] = useState('')
   const [appVersion, setAppVersion] = useState('')
   const [update, setUpdate] = useState({ phase: 'idle' }) // idle | checking | available | downloaded | current | error
+  const [backendUrlInput, setBackendUrlInput] = useState(getBackendUrl())
+  const [backendStatus, setBackendStatus] = useState(null) // null | 'testing' | 'ok' | 'error'
+  const [backendMessage, setBackendMessage] = useState('')
 
   const refresh = async () => {
     const st = await account.status()
@@ -263,6 +266,112 @@ export default function SettingsView() {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ---------- Backend (Android / red local) ---------- */}
+      <section
+        aria-label="Backend"
+        className="mt-4 overflow-hidden rounded-2xl border border-white/[0.06] bg-[#141f22]"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#15d3a2]/12">
+              <Globe size={18} className="text-[#15d3a2]" aria-hidden />
+            </span>
+            <div>
+              <h2 className="text-[15px] font-extrabold tracking-tight text-white">Backend (Android / red local)</h2>
+              <p className="text-[11px] text-[#8ca0ab]">URL del servidor Turtune API (búsqueda y audio)</p>
+            </div>
+          </div>
+          {hasBackend() && (
+            <span className="flex items-center gap-1.5 rounded-full bg-[#15d3a2]/10 px-3 py-1 text-[10.5px] font-bold uppercase tracking-wider text-[#15d3a2]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#15d3a2]" aria-hidden /> Activo
+            </span>
+          )}
+        </div>
+
+        <div className="px-6 py-5">
+          <label htmlFor="backend-url" className="text-[12px] font-bold uppercase tracking-wider text-[#8ca0ab]">
+            URL del backend
+          </label>
+          <input
+            id="backend-url"
+            type="url"
+            value={backendUrlInput}
+            onChange={(e) => setBackendUrlInput(e.target.value)}
+            placeholder="http://10.0.2.2:8787 (emulador) o https://tu-vps.example.com"
+            spellCheck={false}
+            autoComplete="off"
+            className="mt-2 h-11 w-full rounded-xl border border-white/10 bg-[#101a1b] px-4 text-[12.5px] text-white placeholder-[#4a5a68] outline-none transition focus:border-[#15d3a2]/50"
+          />
+          <p className="mt-2 text-[10.5px] leading-snug text-[#66798a]">
+            Emulador Android → <code>http://10.0.2.2:8787</code> (tu PC). Teléfono físico → la IP de tu PC en la red local
+            o un VPS con HTTPS. En la app de escritorio esta URL se ignora (usa IPC).
+          </p>
+
+          {backendStatus && backendStatus !== 'testing' && (
+            <p
+              role={backendStatus === 'error' ? 'alert' : 'status'}
+              className={`mt-3 flex items-start gap-2 rounded-lg px-3 py-2 text-[12px] leading-snug ${
+                backendStatus === 'ok'
+                  ? 'bg-[#15d3a2]/[0.08] text-[#b9d8de]'
+                  : 'bg-[#2a1215] text-[#fecaca]'
+              }`}
+            >
+              {backendStatus === 'ok' ? (
+                <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[#15d3a2]" aria-hidden />
+              ) : (
+                <AlertCircle size={15} className="mt-0.5 shrink-0 text-[#f87171]" aria-hidden />
+              )}
+              {backendMessage}
+            </p>
+          )}
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={backendStatus === 'testing'}
+              onClick={async () => {
+                setBackendStatus('testing')
+                setBackendMessage('')
+                const url = setBackendUrl(backendUrlInput)
+                if (!url) {
+                  setBackendStatus('error')
+                  setBackendMessage('Ingresa una URL válida.')
+                  return
+                }
+                try {
+                  const res = await backendFetch('/health')
+                  setBackendStatus('ok')
+                  setBackendMessage(`Conectado · v${res?.version ?? '?'} · Node ${res?.node ?? '?'}`)
+                } catch (err) {
+                  setBackendStatus('error')
+                  setBackendMessage(`No se pudo conectar: ${String(err?.message ?? err)}`)
+                }
+              }}
+              className="flex h-11 items-center gap-2 rounded-full bg-[#15d3a2] px-5 text-[12px] font-extrabold uppercase tracking-wider text-[#062a1d] transition hover:bg-[#4fe3b7] disabled:cursor-wait disabled:opacity-70"
+            >
+              {backendStatus === 'testing' ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" /> Probando…
+                </>
+              ) : (
+                <>
+                  <Plug size={15} strokeWidth={2.5} /> Probar y guardar
+                </>
+              )}
+            </button>
+            {hasBackend() && (
+              <button
+                type="button"
+                onClick={() => { setBackendUrl(''); setBackendUrlInput(''); setBackendStatus(null); setBackendMessage('') }}
+                className="text-[12px] font-bold text-[#8ca0ab] transition hover:text-white"
+              >
+                Desactivar backend
+              </button>
+            )}
+          </div>
         </div>
       </section>
 

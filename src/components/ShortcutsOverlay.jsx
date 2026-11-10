@@ -63,7 +63,7 @@ export default function ShortcutsOverlay() {
       />
 
       {/* Panel */}
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#141f22] shadow-2xl">
+      <div className="relative w-full max-h-[100vh] overflow-y-auto rounded-none border border-white/10 bg-[#141f22] shadow-2xl sm:max-h-[85vh] sm:rounded-2xl">
         <div className="flex items-center justify-between border-b border-white/5 px-6 py-4">
           <div className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#15d3a2]/15">
