@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Play, Pause, History, ArrowRight, AudioLines, Music2 } from 'lucide-react'
+import { Play, Pause, History, ArrowRight, AudioLines, Music2 } from '../lib/icons'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import TrackCard from './TrackCard'
 import Thumb from './Thumb'

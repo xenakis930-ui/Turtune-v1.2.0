@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   Import, X, Loader2, AlertCircle, ListPlus, Heart, Play, ListMusic, CheckCircle2,
-} from 'lucide-react'
+} from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { importPlaylist } from '../lib/api'
 import { playTrack } from '../audio/engine'

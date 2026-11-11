@@ -3,7 +3,7 @@ import {
   Settings, Youtube, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff, Trash2,
   ExternalLink, ShieldCheck, Plug, Unplug, Library, ChevronDown, Globe,
   RefreshCw, Rocket,
-} from 'lucide-react'
+} from '../lib/icons'
 import { account, isDesktop, updater, getAppVersion, getBackendUrl, setBackendUrl, hasBackend, backendFetch } from '../lib/api'
 import { usePlayerStore } from '../store/usePlayerStore'
 

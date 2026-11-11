@@ -1,4 +1,4 @@
-import { Home, Search, Library, Settings, Music2 } from 'lucide-react'
+import { Home, Search, Library, Settings, Music2 } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 
 const ITEMS = [

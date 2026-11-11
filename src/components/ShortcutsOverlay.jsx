@@ -1,4 +1,4 @@
-import { X, Keyboard } from 'lucide-react'
+import { X, Keyboard } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 
 const GROUPS = [

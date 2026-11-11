@@ -1,4 +1,4 @@
-import { Play, Pause, Loader2, Heart, ListPlus } from 'lucide-react'
+import { Play, Pause, Loader2, Heart, ListPlus } from '../lib/icons'
 import Thumb from './Thumb'
 import { formatDuration } from '../lib/format'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'

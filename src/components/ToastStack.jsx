@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AlertCircle, Info, X } from 'lucide-react'
+import { AlertCircle, Info, X } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 
 const AUTO_DISMISS_MS = 4500

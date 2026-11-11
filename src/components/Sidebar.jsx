@@ -1,4 +1,4 @@
-import { Home, Search, Library, Heart, ListMusic, Import, Settings } from 'lucide-react'
+import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { getAppVersion } from '../lib/api'
 import { useEffect, useState } from 'react'

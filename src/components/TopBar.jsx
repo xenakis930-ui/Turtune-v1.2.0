@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Search, X, Minus, Square, X as CloseIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, X, Minus, Square, X as CloseIcon } from '../lib/icons'
 import { useEffect, useRef } from 'react'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { windowControls, isDesktop } from '../lib/api'

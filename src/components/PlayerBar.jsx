@@ -1,7 +1,7 @@
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart,
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
-} from 'lucide-react'
+} from '../lib/icons'
 import Thumb from './Thumb'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'

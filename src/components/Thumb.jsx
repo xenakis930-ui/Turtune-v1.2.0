@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Music2 } from 'lucide-react'
+import { Music2 } from '../lib/icons'
 
 /** Carátula con fallback elegante si la imagen no carga (offline / id inválido). */
 export default function Thumb({ src, alt = '', className = '', iconSize = 28 }) {

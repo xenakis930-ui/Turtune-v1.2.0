@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Heart, Play, Pause, Clock3, Library, Youtube, Loader2, ListPlus, RefreshCw, X } from 'lucide-react'
+import { Heart, Play, Pause, Clock3, Library, Youtube, Loader2, ListPlus, RefreshCw, X } from '../lib/icons'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playTrack, togglePlay } from '../audio/engine'
 import Thumb from './Thumb'

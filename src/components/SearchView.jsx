@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Search, LayoutGrid, List, Loader2, AlertCircle, Clock3, X, Play, Pause, ListMusic, History,
-} from 'lucide-react'
+} from '../lib/icons'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { searchBackend } from '../lib/api'
 import { playTrack, togglePlay } from '../audio/engine'

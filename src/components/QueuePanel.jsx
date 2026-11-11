@@ -1,4 +1,4 @@
-import { ListMusic, X, Trash2, Play, Pause, Loader2 } from 'lucide-react'
+import { ListMusic, X, Trash2, Play, Pause, Loader2 } from '../lib/icons'
 import Thumb from './Thumb'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playQueueIndex, togglePlay } from '../audio/engine'
