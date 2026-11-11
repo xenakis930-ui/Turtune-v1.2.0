@@ -14,10 +14,47 @@
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { getStreamUrl } from '../lib/api'
 import { initMediaSession } from './mediaSession'
+import { getBackendUrl } from '../lib/backend'
 
 const audio = new Audio()
 audio.preload = 'auto'
 // Sin crossOrigin: la reproducción <audio> no necesita CORS y el proxy local no lo exige.
+
+// --- Backend nativo (Android / Capacitor): ExoPlayer en servicio foreground ---
+const isNative = () => typeof window !== 'undefined' && !!window.Capacitor?.isNativePlatform?.()
+const nativePlugin = () => (typeof window !== 'undefined' ? window.Capacitor?.Plugins?.TurtuneAudio : null)
+let nativeWired = false
+
+function nativeInit() {
+  if (nativeWired) return
+  const plugin = nativePlugin()
+  if (!plugin) return
+  nativeWired = true
+  plugin.addListener('progress', (data) => {
+    usePlayerStore.setState({
+      currentTime: Number(data?.currentTime) || 0,
+      ...(Number.isFinite(data?.duration) && data.duration > 0 ? { duration: data.duration } : {}),
+    })
+  })
+  plugin.addListener('stateChange', (data) => {
+    usePlayerStore.setState({ playbackState: data?.isPlaying ? PLAYBACK.PLAYING : PLAYBACK.PAUSED, buffering: false })
+  })
+  plugin.addListener('ended', () => handleEnded())
+  plugin.addListener('skipNext', () => next(false))
+  plugin.addListener('skipPrevious', () => previous())
+  plugin.addListener('trackChanged', (data) => {
+    const idx = Number(data?.index) || 0
+    const track = s().queue[idx]
+    if (track) {
+      usePlayerStore.setState({ current: track, index: idx, playbackState: PLAYBACK.PLAYING, buffering: false, currentTime: 0, duration: track.duration ?? 0 })
+      s().recordHistory(track)
+    }
+  })
+  plugin.addListener('error', (data) => {
+    usePlayerStore.setState({ playbackState: PLAYBACK.ERROR, buffering: false })
+    s().pushToast('error', String(data?.message ?? 'No se pudo reproducir el audio.'))
+  })
+}
 
 let wired = false
 let loadToken = 0 // evita carreras cuando el usuario salta de pista rápido
@@ -27,6 +64,14 @@ const s = () => usePlayerStore.getState()
 export function initEngine() {
   if (wired) return
   wired = true
+
+  if (isNative()) {
+    nativeInit()
+    // Sincronizar volumen inicial
+    const plugin = nativePlugin()
+    if (plugin) plugin.setVolume({ volume: clamp01(s().volume) }).catch(() => {})
+    return
+  }
 
   audio.volume = clamp01(s().volume)
   audio.muted = s().muted
@@ -67,8 +112,9 @@ export function initEngine() {
   audio.addEventListener('ended', handleEnded)
   audio.addEventListener('error', handleAudioError)
 
-  // Teclas multimedia + metadatos del sistema (Media Session API)
-  initMediaSession({ togglePlay, next, previous, seekTo })
+  // Teclas multimedia + metadatos del sistema (Media Session API) — solo en web/Electron
+  // (en Android lo gestiona el servicio nativo TurtuneAudioService).
+  if (!isNative()) initMediaSession({ togglePlay, next, previous, seekTo })
 }
 
 function clamp01(v) {
@@ -76,6 +122,17 @@ function clamp01(v) {
 }
 
 function handleEnded() {
+  if (isNative()) {
+    const { repeat } = s()
+    if (repeat === 'one') {
+      const plugin = nativePlugin()
+      if (plugin) { plugin.seek({ position: 0 }).catch(() => {}); plugin.resume().catch(() => {}) }
+      return
+    }
+    next(true)
+    return
+  }
+
   const { repeat } = s()
   if (repeat === 'one') {
     audio.currentTime = 0
@@ -123,6 +180,22 @@ function prefetchNext() {
 }
 
 async function loadAndPlay(track, token) {
+  if (isNative()) {
+    const plugin = nativePlugin()
+    if (!plugin) { setError('Motor de audio nativo no disponible.'); return }
+    usePlayerStore.setState({ playbackState: PLAYBACK.LOADING, buffering: true, currentTime: 0 })
+    try {
+      const url = await getStreamUrl(track.id)
+      if (token !== loadToken) return
+      await plugin.play({ url, title: track.title, artist: track.artist, thumbnail: track.thumbnail })
+      prefetchNext()
+    } catch (err) {
+      if (token !== loadToken) return
+      setError(`No se pudo cargar el audio (${String(err?.message ?? err).slice(0, 80)})`)
+    }
+    return
+  }
+
   usePlayerStore.setState({ playbackState: PLAYBACK.LOADING, buffering: true, currentTime: 0 })
   try {
     const url = await getStreamUrl(track.id)
@@ -148,16 +221,57 @@ async function loadAndPlay(track, token) {
 export function playTrack(track, contextList) {
   if (!track?.id) return
   const list = Array.isArray(contextList) && contextList.length ? contextList : [track]
-  const index = Math.max(
-    0,
-    list.findIndex((t) => t.id === track.id),
-  )
+  const index = Math.max(0, list.findIndex((t) => t.id === track.id))
+
+  if (isNative()) {
+    const plugin = nativePlugin()
+    if (!plugin) { setError('Motor de audio nativo no disponible.'); return }
+    const token = ++loadToken
+    s().beginTrack(track, list, index)
+    const baseUrl = getBackendUrl()
+    const urls = list.map((t) => `${baseUrl}/stream/${encodeURIComponent(t.id)}`)
+    const titles = list.map((t) => t.title)
+    const artists = list.map((t) => t.artist)
+    const thumbs = list.map((t) => t.thumbnail)
+    plugin.playQueue({
+      urls,
+      titles,
+      artists,
+      thumbnails: thumbs,
+      startIndex: index,
+      repeatAll: s().repeat === 'all',
+      repeatOne: s().repeat === 'one',
+      shuffle: s().shuffle,
+    }).catch((err) => {
+      if (token !== loadToken) return
+      setError(`No se pudo cargar el audio (${String(err?.message ?? err).slice(0, 80)})`)
+    })
+    return
+  }
+
   const token = ++loadToken
   s().beginTrack(track, list, index)
   loadAndPlay(track, token)
 }
 
 export function togglePlay() {
+  if (isNative()) {
+    const { playbackState } = s()
+    const plugin = nativePlugin()
+    if (!plugin) return
+    if (playbackState === PLAYBACK.PLAYING || playbackState === PLAYBACK.LOADING) {
+      plugin.pause().catch(() => {})
+    } else if (playbackState === PLAYBACK.PAUSED) {
+      plugin.resume().catch(() => {})
+    } else {
+      // IDLE | ERROR → reproducir desde el principio
+      const token = ++loadToken
+      const current = s().current
+      if (current) loadAndPlay(current, token)
+    }
+    return
+  }
+
   const { playbackState, current, duration, currentTime } = s()
   if (!current) return
 
@@ -176,6 +290,12 @@ export function togglePlay() {
 }
 
 export function next(_auto = false) {
+  if (isNative()) {
+    const plugin = nativePlugin()
+    if (plugin) plugin.next().catch(() => {})
+    return
+  }
+
   const { queue, index, repeat, shuffle } = s()
   if (!queue.length) return
 
@@ -200,6 +320,12 @@ export function next(_auto = false) {
 }
 
 export function previous() {
+  if (isNative()) {
+    const plugin = nativePlugin()
+    if (plugin) plugin.previous().catch(() => {})
+    return
+  }
+
   const { queue, index, currentTime } = s()
   if (!queue.length) return
 
@@ -217,6 +343,14 @@ export function previous() {
 
 /** Seek interactivo de la seekbar (limitado al rango [0, duration]). */
 export function seekTo(seconds) {
+  if (isNative()) {
+    const t = Math.max(0, Number(seconds) || 0)
+    const plugin = nativePlugin()
+    if (plugin) plugin.seek({ position: t }).catch(() => {})
+    usePlayerStore.setState({ currentTime: t })
+    return
+  }
+
   const dur = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : null
   let t = Math.max(0, Number(seconds) || 0)
   if (dur != null) t = Math.min(t, dur)
@@ -225,6 +359,14 @@ export function seekTo(seconds) {
 }
 
 export function setVolume(v) {
+  if (isNative()) {
+    const vol = clamp01(v)
+    usePlayerStore.setState({ volume: vol, ...(vol > 0 ? { muted: false } : {}) })
+    const plugin = nativePlugin()
+    if (plugin) plugin.setVolume({ volume: vol }).catch(() => {})
+    return
+  }
+
   const vol = clamp01(v)
   usePlayerStore.setState({ volume: vol, ...(vol > 0 ? { muted: false } : {}) })
   audio.volume = vol
@@ -232,6 +374,19 @@ export function setVolume(v) {
 }
 
 export function toggleMute() {
+  if (isNative()) {
+    const { muted, volume } = s()
+    const nextMuted = !muted
+    usePlayerStore.setState({ muted: nextMuted })
+    const plugin = nativePlugin()
+    if (plugin) plugin.setVolume({ volume: nextMuted ? 0 : volume }).catch(() => {})
+    if (!nextMuted && volume === 0) {
+      usePlayerStore.setState({ volume: 0.5 })
+      if (plugin) plugin.setVolume({ volume: 0.5 }).catch(() => {})
+    }
+    return
+  }
+
   const { muted, volume } = s()
   const nextMuted = !muted
   usePlayerStore.setState({ muted: nextMuted })
@@ -243,6 +398,22 @@ export function toggleMute() {
 }
 
 export function playQueueIndex(i) {
+  if (isNative()) {
+    const { queue, index } = s()
+    if (i === index) { togglePlay(); return }
+    if (i < 0 || i >= queue.length) return
+    const plugin = nativePlugin()
+    if (plugin) {
+      const baseUrl = getBackendUrl()
+      const urls = queue.map((t) => `${baseUrl}/stream/${encodeURIComponent(t.id)}`)
+      const titles = queue.map((t) => t.title)
+      const artists = queue.map((t) => t.artist)
+      const thumbs = queue.map((t) => t.thumbnail)
+      plugin.playQueue({ urls, titles, artists, thumbnails: thumbs, startIndex: i, repeatAll: s().repeat === 'all', repeatOne: s().repeat === 'one', shuffle: s().shuffle }).catch(() => {})
+    }
+    return
+  }
+
   const { queue, index } = s()
   if (i === index) {
     togglePlay()

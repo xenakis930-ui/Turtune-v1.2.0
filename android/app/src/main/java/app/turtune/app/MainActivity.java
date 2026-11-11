@@ -8,6 +8,7 @@ import android.webkit.WebView;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(TurtuneAudioPlugin.class);
         super.onCreate(savedInstanceState);
         WebView webView = getBridge().getWebView();
         if (webView != null) {
