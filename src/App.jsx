@@ -51,7 +51,7 @@ export default function App() {
 
   return (
     <div className="no-select flex h-screen w-screen flex-col overflow-hidden bg-base text-white">
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 gap-2 p-2">
         <Sidebar />
 
         <main className="main-ambient flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/[0.06] shadow-[0_18px_44px_rgba(0,0,0,0.35)]">

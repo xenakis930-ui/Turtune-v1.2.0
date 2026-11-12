@@ -24,7 +24,7 @@ export default function QueuePanel() {
           type="button"
           aria-label="Cerrar cola"
           onClick={toggleQueue}
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[1px]"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[1px] sm:hidden"
           style={{ touchAction: 'manipulation' }}
         />
       )}
