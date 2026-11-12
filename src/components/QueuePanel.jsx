@@ -1,4 +1,4 @@
-import { ListMusic, X, Trash2, Play, Pause, Loader2 } from '../lib/icons'
+﻿import { ListMusic, X, Trash2, Play, Pause, Loader2 } from '../lib/icons'
 import Thumb from './Thumb'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playQueueIndex, togglePlay } from '../audio/engine'
@@ -60,9 +60,11 @@ export default function QueuePanel() {
             type="button"
             onClick={toggleQueue}
             aria-label="Cerrar cola"
-            className="rounded-md p-2 text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
+            title="Cerrar"
+            className="rounded-lg p-2.5 text-[#8ca0af] transition hover:bg-white/5 hover:text-white active:scale-95"
+            style={{ touchAction: "manipulation" }}
           >
-            <X size={18} />
+            <X size={22} strokeWidth={2.5} />
           </button>
         </div>
       </div>
@@ -151,6 +153,15 @@ export default function QueuePanel() {
         )}
       </div>
 
+      {/* Cerrar en m�vil */}
+      <button
+        type="button"
+        onClick={toggleQueue}
+        className="mx-5 mb-3 mt-1 flex h-11 items-center justify-center gap-2 rounded-full border border-white/10 text-[12px] font-bold text-[#8ca0af] transition hover:border-[#15d3a2]/40 hover:text-[#15d3a2] sm:hidden"
+        style={{ touchAction: "manipulation" }}
+      >
+        <X size={16} /> Cerrar cola
+      </button>
       {/* Pie */}
       <div className="border-t border-white/5 px-5 py-3 text-[10.5px] leading-snug text-[#5f7280]">
         La cola es local a esta sesión. Al llegar al final con «repetir» desactivado, la
