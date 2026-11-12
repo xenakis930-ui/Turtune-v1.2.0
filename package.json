@@ -27,6 +27,7 @@
     "files": [
       "dist/**",
       "electron/**",
+      "build/**",
       "tools/yt-dlp.exe",
       "package.json"
     ],

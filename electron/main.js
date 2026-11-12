@@ -107,7 +107,7 @@ async function createWindow() {
     show: false,
     backgroundColor: '#101A1B',
     title: 'Turtune',
-    icon: path.join(__dirname, '..', 'build', 'icon.png'),
+    icon: path.join(__dirname, '..', 'build', 'icon.ico'),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
