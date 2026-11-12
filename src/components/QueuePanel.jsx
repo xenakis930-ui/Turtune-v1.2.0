@@ -59,8 +59,8 @@ export default function QueuePanel() {
             </button>
             <button
               type="button"
-              onClick={toggleQueue}
-              onTouchEnd={(e) => { e.preventDefault(); toggleQueue() }}
+              onClick={(e) => { e.stopPropagation(); toggleQueue() }}
+              onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); toggleQueue() }}
               aria-label="Cerrar cola"
               title="Cerrar"
               className="rounded-lg p-2.5 text-[#8ca0af] transition hover:bg-white/5 hover:text-white active:scale-95"
