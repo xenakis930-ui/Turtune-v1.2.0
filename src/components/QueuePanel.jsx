@@ -4,7 +4,7 @@ import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playQueueIndex, togglePlay } from '../audio/engine'
 import { formatDuration } from '../lib/format'
 
-/** Panel lateral deslizante: "Suena ahora" + "A continuación" (con eliminar/limpiar). */
+/** Panel de cola de reproducción. Se renderiza solo cuando está abierto. */
 export default function QueuePanel() {
   const open = usePlayerStore((s) => s.queueOpen)
   const toggleQueue = usePlayerStore((s) => s.toggleQueue)
@@ -14,26 +14,26 @@ export default function QueuePanel() {
   const removeFromQueue = usePlayerStore((s) => s.removeFromQueue)
   const clearUpNext = usePlayerStore((s) => s.clearUpNext)
 
+  // No renderizar nada si está cerrado — evita cualquier problema de CSS/transición
+  if (!open) return null
+
   const current = index >= 0 ? queue[index] : null
   const upcoming = queue.map((track, i) => ({ track, i })).slice(index + 1)
 
   return (
     <>
-      {open && (
-        <button
-          type="button"
-          aria-label="Cerrar cola"
-          onClick={toggleQueue}
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[1px] sm:hidden"
-          style={{ touchAction: 'manipulation' }}
-        />
-      )}
+      {/* Backdrop táctil: tocar fuera cierra la cola */}
+      <button
+        type="button"
+        aria-label="Cerrar cola"
+        onClick={toggleQueue}
+        className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[1px]"
+        style={{ touchAction: 'manipulation' }}
+      />
+
       <aside
         aria-label="Cola de reproducción"
-        aria-hidden={!open}
-        className={`fixed inset-0 z-40 flex w-full flex-col border-white/5 bg-[#141f22] shadow-2xl transition-transform duration-300 ease-out sm:bottom-[76px] sm:top-0 sm:w-[340px] sm:max-w-[92vw] sm:border-l ${
-          open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
-        }`}
+        className="fixed inset-y-0 right-0 z-40 flex w-full flex-col border-l border-white/5 bg-[#141f22] shadow-2xl sm:w-[340px] sm:max-w-[92vw]"
       >
         {/* Cabecera */}
         <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
@@ -154,16 +154,6 @@ export default function QueuePanel() {
             </>
           )}
         </div>
-
-        {/* Cerrar en móvil */}
-        <button
-          type="button"
-          onClick={toggleQueue}
-          className="mx-5 mb-3 mt-1 flex h-11 items-center justify-center gap-2 rounded-full border border-white/10 text-[12px] font-bold text-[#8ca0af] transition hover:border-[#15d3a2]/40 hover:text-[#15d3a2] sm:hidden"
-          style={{ touchAction: 'manipulation' }}
-        >
-          <X size={16} /> Cerrar cola
-        </button>
 
         {/* Pie */}
         <div className="border-t border-white/5 px-5 py-3 text-[10.5px] leading-snug text-[#5f7280]">
