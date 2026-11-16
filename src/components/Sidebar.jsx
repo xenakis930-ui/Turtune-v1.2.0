@@ -1,4 +1,4 @@
-import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
+﻿import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { getAppVersion } from '../lib/api'
 import { useEffect, useState } from 'react'
@@ -11,7 +11,7 @@ const NAV = [
   { id: 'settings', label: 'Ajustes', Icon: Settings },
 ]
 
-/** Barra lateral fija: logo, navegación, atajo a Me gusta y tarjeta de sesión. */
+/** Barra lateral fija: logo, navegaci�n, atajo a Me gusta y tarjeta de sesi�n. */
 export default function Sidebar() {
   const view = usePlayerStore((s) => s.view)
   const setView = usePlayerStore((s) => s.setView)
@@ -28,20 +28,20 @@ export default function Sidebar() {
   }, [])
 
   return (
-    <aside className="hidden lg:flex w-[236px] shrink-0 flex-col gap-2 rounded-xl border border-white/[0.06] bg-[#0c1718] p-4">
+    <aside className="hidden md:flex w-[72px] lg:w-[236px] shrink-0 flex-col gap-2 rounded-xl border border-white/[0.06] bg-[#0c1718] p-3 lg:p-4">
       {/* Logo */}
-      <div className="mb-2 flex items-center gap-2.5 px-1">
+      <div className="mb-2 flex items-center justify-center px-1 lg:justify-start lg:gap-2.5">
         <img
           src={turtuneLogo}
-          alt="Turtune — logotipo de la aplicación (tortuga con auriculares)"
-          className={`h-11 w-11 object-contain transition-all duration-500 ${
+          alt="Turtune"
+          className={`h-9 w-9 shrink-0 object-contain transition-all duration-500 lg:h-11 lg:w-11 ${
             isPlaying
               ? 'drop-shadow-[0_0_16px_rgba(21,211,162,0.55)] animate-pulse'
               : 'drop-shadow-[0_0_14px_rgba(21,211,162,0.35)]'
           }`}
           draggable={false}
         />
-        <span className="leading-tight">
+        <span className="hidden leading-tight lg:block">
           <span className="block text-[21px] font-black tracking-tight text-white">Turtune</span>
           <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#15d3a2]">
             audio-only
@@ -49,8 +49,8 @@ export default function Sidebar() {
         </span>
       </div>
 
-      {/* Navegación principal */}
-      <nav aria-label="Navegación principal">
+      {/* Navegaci�n principal */}
+      <nav aria-label="Navegaci�n principal">
         <ul className="flex flex-col gap-1">
           {NAV.map(({ id, label, Icon }) => {
             const active = view === id
@@ -59,13 +59,14 @@ export default function Sidebar() {
                 <button
                   type="button"
                   onClick={() => setView(id)}
-                  aria-current={active ? 'page' : undefined}
-                  className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-[15px] font-bold transition-colors ${
+                    aria-current={active ? 'page' : undefined}
+                    title={label}
+                    className={`flex w-full items-center justify-center gap-3 rounded-md px-3 py-2.5 text-[15px] font-bold transition-colors lg:justify-start ${
                     active ? 'bg-white/10 text-white' : 'text-[#8ca0af] hover:text-white'
                   }`}
                 >
                   <Icon size={22} strokeWidth={active ? 2.5 : 2} aria-hidden />
-                  {label}
+                    <span className="hidden lg:block">{label}</span>
                 </button>
               </li>
             )
@@ -76,7 +77,7 @@ export default function Sidebar() {
       {/* Atajos de biblioteca */}
       <div className="mt-2 border-t border-white/10 pt-3">
         <p className="px-3 pb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#72868f]">
-          Colección
+          Colecci�n
         </p>
         <button
           type="button"
@@ -100,7 +101,7 @@ export default function Sidebar() {
           <span className="grid h-8 w-8 place-items-center rounded-md bg-white/[0.08]">
             <ListMusic size={16} aria-hidden />
           </span>
-          <span className="flex-1 text-left">Cola de reproducción</span>
+          <span className="flex-1 text-left">Cola de reproducci�n</span>
         </button>
         <button
           type="button"
@@ -116,7 +117,7 @@ export default function Sidebar() {
 
       <div className="mt-auto rounded-lg border border-white/[0.05] bg-white/[0.03] p-3 text-[11px] leading-snug text-[#72868f]">
         <p className="font-semibold text-[#8ca0af]">Motor de audio</p>
-        <p className="mt-1">yt-dlp · solo audio (m4a/opus) · sin vídeo</p>
+        <p className="mt-1">yt-dlp � solo audio (m4a/opus) � sin v�deo</p>
         {version && <p className="mt-1 tabular-nums text-[#5f7280]">Turtune v{version}</p>}
       </div>
 

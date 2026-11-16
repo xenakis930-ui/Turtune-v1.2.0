@@ -4,7 +4,7 @@ import { formatDuration } from '../lib/format'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playTrack, togglePlay } from '../audio/engine'
 
-/** Puntos ecualizador animado cuando la pista está sonando. */
+/** Puntos ecualizador animado cuando la pista est� sonando. */
 function EqBars({ paused }) {
   return (
     <div className={`flex h-4 items-end gap-[2px] ${paused ? 'eq-paused' : ''}`} aria-hidden>
@@ -16,8 +16,8 @@ function EqBars({ paused }) {
 }
 
 /**
- * Tarjeta de pista (grid) estilo Spotify: carátula cuadrada, hover → overlay +
- * botón play verde, duración en badge, truncado de título, autor debajo.
+ * Tarjeta de pista (grid) estilo Spotify: car�tula cuadrada, hover ? overlay +
+ * bot�n play verde, duraci�n en badge, truncado de t�tulo, autor debajo.
  */
 export default function TrackCard({ track, context }) {
   const current = usePlayerStore((s) => s.current)
@@ -29,7 +29,8 @@ export default function TrackCard({ track, context }) {
   const isCurrent = current?.id === track.id
   const isPlaying = isCurrent && playbackState === PLAYBACK.PLAYING
   const isLoading = isCurrent && playbackState === PLAYBACK.LOADING
-  const isLiked = liked.some((t) => t.id === track.id)
+  const flashId = usePlayerStore((s) => s.flashId)
+  const isFlashing = flashId === track.id
 
   const onPrimary = () => {
     if (isCurrent) togglePlay()
@@ -37,10 +38,10 @@ export default function TrackCard({ track, context }) {
   }
 
   return (
-    <div className="group relative rounded-xl border border-white/[0.05] bg-[#141f22] p-4 card-lift hover:border-white/[0.09] hover:bg-[#18262a]">
-      {/* Carátula + acción principal */}
+    <div className={`group relative rounded-xl border border-white/[0.05] bg-[#141f22] p-4 card-lift hover:border-white/[0.09] hover:bg-[#18262a] ${isFlashing ? 'flash-green' : ''}`}>
+      {/* Car�tula + acci�n principal */}
       <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg shadow-card">
-        <Thumb src={track.thumbnail} alt={`Carátula de ${track.title}`} className="h-full w-full" iconSize={44} />
+        <Thumb src={track.thumbnail} alt={`Car�tula de ${track.title}`} className="h-full w-full" iconSize={44} />
         <span className="absolute bottom-1.5 right-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-white/90 backdrop-blur-sm">
           {formatDuration(track.duration)}
         </span>
@@ -53,7 +54,7 @@ export default function TrackCard({ track, context }) {
             <button
               type="button"
               onClick={() => toggleLike(track)}
-              aria-label={isLiked ? 'Quitar de Me gusta' : 'Añadir a Me gusta'}
+              aria-label={isLiked ? 'Quitar de Me gusta' : 'A�adir a Me gusta'}
               aria-pressed={isLiked}
               className="rounded-full bg-black/55 p-1.5 text-white/85 backdrop-blur-sm transition hover:scale-110 hover:text-white"
             >
@@ -62,8 +63,8 @@ export default function TrackCard({ track, context }) {
             <button
               type="button"
               onClick={() => addToQueue(track)}
-              aria-label="Añadir a la cola"
-              title="Añadir a la cola"
+              aria-label="A�adir a la cola"
+              title="A�adir a la cola"
               className="rounded-full bg-black/55 p-1.5 text-white/85 backdrop-blur-sm transition hover:scale-110 hover:text-white"
             >
               <ListPlus size={16} />

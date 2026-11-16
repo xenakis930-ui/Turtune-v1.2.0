@@ -137,6 +137,7 @@ export const usePlayerStore = create(
       addToQueue: (track) => {
         set((s) => (s.current ? { queue: [...s.queue, track] } : { queue: [...s.queue, track] }))
         get().pushToast('info', `Añadida a la cola: ${track.title}`)
+        get().flashTrack(track.id)
       },
       /** Inserta como siguiente en la cola. */
       playNext: (track) =>
@@ -160,6 +161,7 @@ export const usePlayerStore = create(
       toggleLike: (track) =>
         set((s) => {
           const exists = s.liked.some((t) => t.id === track.id)
+          get().flashTrack(track.id)
           return {
             liked: exists ? s.liked.filter((t) => t.id !== track.id) : [track, ...s.liked].slice(0, 200),
           }
@@ -207,6 +209,20 @@ export const usePlayerStore = create(
       pushToast: (type, text) =>
         set((s) => ({ toasts: [...s.toasts.slice(-2), { id: ++toastSeq, type, text: String(text) }] })),
       dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+
+      // ---------- Vista expandida del reproductor ----------
+      expandedPlayer: false,
+      toggleExpandedPlayer: () => set((s) => ({ expandedPlayer: !s.expandedPlayer })),
+      setExpandedPlayer: (expandedPlayer) => set({ expandedPlayer: !!expandedPlayer }),
+
+      // ---------- Flash visual (añadir a cola / me gusta) ----------
+      flashId: null,
+      flashTrack: (id) => {
+        set({ flashId: id })
+        setTimeout(() => {
+          if (usePlayerStore.getState().flashId === id) set({ flashId: null })
+        }, 650)
+      },
     }),
     {
       name: 'octave-storage', // nombre legado v1 — se conserva para no perder likes/historial

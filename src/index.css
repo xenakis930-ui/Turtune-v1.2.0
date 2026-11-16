@@ -204,7 +204,58 @@ body {
   transform: scaleY(0.28);
 }
 
-/* ---------- Utilitarios ---------- */
+/* ---------- Tooltip de tiempo en seekbar ---------- */
+.seek-tooltip {
+  position: absolute;
+  bottom: 100%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  tabular-nums: 1;
+  white-space: nowrap;
+  z-index: 10;
+}
+.seek-wrap:hover .seek-tooltip,
+.seek-wrap:focus-within .seek-tooltip {
+  opacity: 1;
+}
+
+/* ---------- Flash verde al añadir a cola / me gusta ---------- */
+@keyframes flashGreen {
+  0% { background-color: rgba(21, 211, 162, 0.18); }
+  100% { background-color: transparent; }
+}
+.flash-green {
+  animation: flashGreen 0.6s ease both;
+}
+
+/* ---------- Ambilight: halo de la carátula en el footer ---------- */
+.ambilight {
+  position: relative;
+  overflow: hidden;
+}
+.ambilight::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 30% 50%, var(--ambilight-color, rgba(21, 211, 162, 0.18)), transparent 55%);
+  filter: blur(40px);
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.6s ease;
+}
+.ambilight > * {
+  position: relative;
+  z-index: 1;
+}
 .card-lift {
   transition:
     background 0.2s ease,

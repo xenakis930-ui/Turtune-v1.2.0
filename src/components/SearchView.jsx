@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Search, LayoutGrid, List, Loader2, AlertCircle, Clock3, X, Play, Pause, ListMusic, History,
 } from '../lib/icons'
@@ -12,12 +12,12 @@ import { formatDuration } from '../lib/format'
 
 const GENRES = [
   { label: 'Pop', query: 'top 40 pop hits' },
-  { label: 'Reggaetón', query: 'reggaeton hits' },
+  { label: 'Reggaet?n', query: 'reggaeton hits' },
   { label: 'Hip-hop', query: 'hip hop hits' },
   { label: 'Trap latino', query: 'trap latino' },
-  { label: 'Electrónica', query: 'dance pop hits' },
-  { label: 'Rock', query: 'rock en español hits' },
-  { label: 'Baladas', query: 'baladas románticas' },
+  { label: 'Electr?nica', query: 'dance pop hits' },
+  { label: 'Rock', query: 'rock en espa?ol hits' },
+  { label: 'Baladas', query: 'baladas rom?nticas' },
   { label: 'Corridos tumbados', query: 'corridos tumbados' },
 ]
 
@@ -44,7 +44,7 @@ export default function SearchView() {
     return () => clearTimeout(t)
   }, [query])
 
-  // Fetch con cancelación por secuencia (ignora respuestas fuera de orden)
+  // Fetch con cancelaci?n por secuencia (ignora respuestas fuera de orden)
   useEffect(() => {
     if (!debounced) {
       setStatus('idle')
@@ -65,7 +65,7 @@ export default function SearchView() {
           if (res.items.length) addRecentSearch(debounced)
         } else {
           setItems([])
-          setError(res?.error ?? 'No se pudo completar la búsqueda.')
+          setError(res?.error ?? 'No se pudo completar la b?squeda.')
           setStatus('error')
         }
       })
@@ -109,7 +109,7 @@ export default function SearchView() {
                 Resultados de audio
               </p>
               <h1 className="mt-1 text-2xl font-black tracking-tight text-white">
-                “{debounced}”
+                ?{debounced}?
                 <span className="ml-3 align-middle text-sm font-semibold text-[#8ca0af]">
                   {items.length} pistas
                 </span>
@@ -124,7 +124,7 @@ export default function SearchView() {
               <div>
                 <p className="text-lg font-bold text-white">Sin resultados</p>
                 <p className="mt-1 max-w-md text-sm text-[#8ca0af]">
-                  Prueba con otro artista, canción o estilo. La búsqueda usa el índice de YouTube.
+                  Prueba con otro artista, canci?n o estilo. La b?squeda usa el ?ndice de YouTube.
                 </p>
               </div>
             </div>
@@ -160,10 +160,10 @@ export default function SearchView() {
                       className="grid grid-cols-[2rem_minmax(0,1fr)_2rem_3.5rem_2.5rem] gap-3 border-b border-white/5 px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-[#72868f]"
                     >
                       <span className="text-center">#</span>
-                      <span>Título</span>
+                      <span>T?tulo</span>
                       <span />
                       <span className="text-right">
-                        <Clock3 size={13} className="ml-auto" aria-label="Duración" />
+                        <Clock3 size={13} className="ml-auto" aria-label="Duraci?n" />
                       </span>
                       <span />
                     </div>
@@ -200,8 +200,8 @@ function LayoutToggle({ layout, onChange }) {
     </button>
   )
   return (
-    <div role="radiogroup" aria-label="Cambiar disposición" className="flex items-center gap-1 rounded-full bg-black/40 p-1">
-      {btn('grid', 'Vista cuadrícula', LayoutGrid)}
+    <div role="radiogroup" aria-label="Cambiar disposici?n" className="flex items-center gap-1 rounded-full bg-black/40 p-1">
+      {btn('grid', 'Vista cuadr?cula', LayoutGrid)}
       {btn('list', 'Vista lista', List)}
     </div>
   )
@@ -211,7 +211,7 @@ function IdleState({ recentSearches, onPick, onRemoveRecent }) {
   return (
     <>
       {recentSearches.length > 0 && (
-        <section aria-label="Búsquedas recientes">
+        <section aria-label="B?squedas recientes">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight text-white">
               <History size={16} className="text-[#15d3a2]" aria-hidden /> Recientes
@@ -230,7 +230,7 @@ function IdleState({ recentSearches, onPick, onRemoveRecent }) {
                 <button
                   type="button"
                   onClick={() => onRemoveRecent(q)}
-                  aria-label={`Eliminar “${q}” de recientes`}
+                  aria-label={`Eliminar ?${q}? de recientes`}
                   className="mr-1.5 rounded-full p-1 text-[#72868f] transition hover:bg-white/10 hover:text-white"
                 >
                   <X size={14} />
@@ -241,9 +241,9 @@ function IdleState({ recentSearches, onPick, onRemoveRecent }) {
         </section>
       )}
 
-      <section aria-label="Explorar géneros" className="mt-6">
+      <section aria-label="Explorar g?neros" className="mt-6">
         <h2 className="mb-3 flex items-center gap-2 text-[19px] font-extrabold tracking-tight text-white">
-          <ListMusic size={17} className="text-[#15d3a2]" aria-hidden /> Explorar géneros
+          <ListMusic size={17} className="text-[#15d3a2]" aria-hidden /> Explorar g?neros
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
           {GENRES.map((g) => (
@@ -273,7 +273,7 @@ function LoadingSkeleton({ query }) {
     <div aria-busy="true" aria-label={`Buscando ${query}`}>
       <div className="flex items-center gap-3 text-[#8ca0af]">
         <Loader2 size={18} className="animate-spin text-[#15d3a2]" aria-hidden />
-        <p className="text-sm font-semibold">Buscando “{query}” en YouTube…</p>
+        <p className="text-sm font-semibold">Buscando ?{query}? en YouTube?</p>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {Array.from({ length: 12 }).map((_, i) => (
@@ -295,7 +295,7 @@ function ErrorState({ message, onRetry }) {
         <AlertCircle size={30} className="text-[#f87171]" aria-hidden />
       </span>
       <div>
-        <p className="text-lg font-bold text-white">No se pudo completar la búsqueda</p>
+        <p className="text-lg font-bold text-white">No se pudo completar la b?squeda</p>
         <p className="mt-1 max-w-md text-sm text-[#8ca0af]">{message}</p>
       </div>
       <button
@@ -316,28 +316,36 @@ function TopResult({ track, context }) {
   const isPlaying = isCurrent && playbackState === PLAYBACK.PLAYING
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-[#17231f] p-5">
-      <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-[#7ee7f8]">Mejor resultado</p>
-      <Thumb
-        src={track.thumbnail}
-        alt={`Carátula de ${track.title}`}
-        className="mt-4 h-36 w-36 rounded-xl shadow-card"
-        iconSize={48}
-      />
-      <h3 className="mt-4 line-clamp-2 text-3xl font-black leading-tight tracking-tight text-white" title={track.title}>
-        {track.title}
-      </h3>
-      <p className="mt-1.5 text-sm font-semibold text-[#b9d8de]">
-        Canción · <span className="text-white">{track.artist}</span>
-        {track.duration != null && (
-          <span className="tabular-nums text-[#5fb3c8]"> · {formatDuration(track.duration)}</span>
-        )}
-      </p>
+    <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-[#17231f] p-6">
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#7ee7f8]">Mejor resultado</p>
+      <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-end">
+        <Thumb
+          src={track.thumbnail}
+          alt={`Car?tula de ${track.title}`}
+          className="h-44 w-44 shrink-0 rounded-xl shadow-card sm:h-[180px] sm:w-[180px]"
+          iconSize={56}
+        />
+        <div className="min-w-0 flex-1">
+          <h3
+            className="line-clamp-2 text-[28px] font-black leading-[1.05] tracking-tight text-white sm:text-[32px]"
+            title={track.title}
+          >
+            {track.title}
+          </h3>
+          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-[#b9d8de]">
+            <span className="text-white">{track.artist}</span>
+            {track.duration != null && (
+              <span className="tabular-nums text-[#7ee7f8]">? {formatDuration(track.duration)}</span>
+            )}
+          </p>
+          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#66798a]">Canci?n</p>
+        </div>
+      </div>
       <button
         type="button"
         onClick={() => (isCurrent ? togglePlay() : playTrack(track, context))}
         aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
-        className="absolute bottom-5 right-5 grid h-14 w-14 place-items-center rounded-full bg-[#15d3a2] text-black shadow-card transition hover:scale-105 hover:bg-[#4fe3b7]"
+        className="absolute bottom-5 right-5 grid h-14 w-14 place-items-center rounded-full bg-[#15d3a2] text-[#062a1d] shadow-card transition-all duration-200 hover:scale-105 hover:bg-[#4fe3b7] focus-visible:scale-105 sm:bottom-6 sm:right-6"
       >
         {isPlaying ? (
           <Pause size={26} fill="currentColor" />

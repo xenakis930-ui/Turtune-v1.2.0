@@ -11,6 +11,7 @@ import ToastStack from './components/ToastStack'
 import ShortcutsOverlay from './components/ShortcutsOverlay'
 import ImportPlaylistModal from './components/ImportPlaylistModal'
 import MobileNav from './components/MobileNav'
+import ExpandedPlayer from './components/ExpandedPlayer'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore } from './store/usePlayerStore'
 import { initEngine, togglePlay, next, previous } from './audio/engine'
@@ -71,6 +72,7 @@ export default function App() {
       <ToastStack />
       <ShortcutsOverlay />
       <ImportPlaylistModal />
+      <ExpandedPlayer />
     </div>
   )
 }

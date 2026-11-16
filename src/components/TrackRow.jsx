@@ -5,22 +5,20 @@ import { formatDuration } from '../lib/format'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { playTrack, togglePlay } from '../audio/engine'
 
-/**
- * Fila de track para la vista de lista (estilo lista de Spotify):
- * índice | carátula | título/artista | me gusta | duración | añadir a cola.
- */
 export default function TrackRow({ track, context, index, showHeader = true }) {
   const current = usePlayerStore((s) => s.current)
   const playbackState = usePlayerStore((s) => s.playbackState)
   const liked = usePlayerStore((s) => s.liked)
   const toggleLike = usePlayerStore((s) => s.toggleLike)
   const addToQueue = usePlayerStore((s) => s.addToQueue)
+  const flashId = usePlayerStore((s) => s.flashId)
   const [hover, setHover] = useState(false)
 
   const isCurrent = current?.id === track.id
   const isPlaying = isCurrent && playbackState === PLAYBACK.PLAYING
   const isLoading = isCurrent && playbackState === PLAYBACK.LOADING
   const isLiked = liked.some((t) => t.id === track.id)
+  const isFlashing = flashId === track.id
 
   const onPrimary = () => (isCurrent ? togglePlay() : playTrack(track, context))
 
@@ -32,9 +30,9 @@ export default function TrackRow({ track, context, index, showHeader = true }) {
       onMouseLeave={() => setHover(false)}
       onKeyDown={(e) => e.key === 'Enter' && onPrimary()}
       onDoubleClick={onPrimary}
-      className="group grid grid-cols-[2rem_minmax(0,1fr)_2rem_3.5rem_2.5rem] items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-white/[0.04] cursor-pointer"
+      className={`group grid grid-cols-[2rem_minmax(0,1fr)_2rem_3.5rem_2.5rem] items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-white/[0.04] cursor-pointer ${isFlashing ? 'flash-green' : ''}`}
     >
-      {/* Índice / estado */}
+      {/* Indice / estado */}
       <button
         type="button"
         onClick={onPrimary}
@@ -54,11 +52,11 @@ export default function TrackRow({ track, context, index, showHeader = true }) {
         )}
       </button>
 
-      {/* Carátula + título/artista */}
+      {/* Caratula + titulo/artista */}
       <button type="button" onClick={onPrimary} className="flex min-w-0 items-center gap-3 text-left">
         <Thumb
           src={track.thumbnail}
-          alt={`Carátula de ${track.title}`}
+          alt={`Caratula de ${track.title}`}
           className="h-12 w-12 shrink-0 rounded-md"
           iconSize={20}
         />
@@ -81,7 +79,7 @@ export default function TrackRow({ track, context, index, showHeader = true }) {
       <button
         type="button"
         onClick={() => toggleLike(track)}
-        aria-label={isLiked ? 'Quitar de Me gusta' : 'Añadir a Me gusta'}
+        aria-label={isLiked ? 'Quitar de Me gusta' : 'Anadir a Me gusta'}
         aria-pressed={isLiked}
         className={`grid h-8 w-8 place-items-center rounded-full transition-all hover:scale-110 ${
           isLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
@@ -94,17 +92,17 @@ export default function TrackRow({ track, context, index, showHeader = true }) {
         />
       </button>
 
-      {/* Duración */}
+      {/* Duracion */}
       <span className="text-right text-[13px] tabular-nums text-[#8ca0af]">
         {formatDuration(track.duration)}
       </span>
 
-      {/* Añadir a la cola */}
+      {/* Anadir a la cola */}
       <button
         type="button"
         onClick={() => addToQueue(track)}
-        aria-label="Añadir a la cola"
-        title="Añadir a la cola"
+        aria-label="Anadir a la cola"
+        title="Anadir a la cola"
         className="grid h-8 w-8 place-items-center rounded-full text-[#8ca0af] opacity-0 transition-all hover:scale-110 hover:text-white group-hover:opacity-100 focus-visible:opacity-100"
       >
         <ListPlus size={18} />

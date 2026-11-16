@@ -3,14 +3,11 @@ import {
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
 } from '../lib/icons'
 import Thumb from './Thumb'
+import { useState } from 'react'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'
 import { formatTime } from '../lib/format'
 
-/**
- * Footer persistente estilo Spotify:
- *  [portada 56px · título · artista · me gusta] · [controles + seekbar] · [cola · volumen]
- */
 export default function PlayerBar() {
   const current = usePlayerStore((s) => s.current)
   const playbackState = usePlayerStore((s) => s.playbackState)
@@ -26,10 +23,12 @@ export default function PlayerBar() {
   const queueOpen = usePlayerStore((s) => s.queueOpen)
   const toggleQueue = usePlayerStore((s) => s.toggleQueue)
   const toggleHelp = usePlayerStore((s) => s.toggleHelp)
+  const toggleExpandedPlayer = usePlayerStore((s) => s.toggleExpandedPlayer)
   const queue = usePlayerStore((s) => s.queue)
   const index = usePlayerStore((s) => s.index)
   const liked = usePlayerStore((s) => s.liked)
   const toggleLike = usePlayerStore((s) => s.toggleLike)
+  const [seekTip, setSeekTip] = useState(null)
 
   const upcoming = Math.max(0, queue.length - index - 1)
   const effectiveDuration = duration > 0 ? duration : (current?.duration ?? 0)
@@ -47,20 +46,29 @@ export default function PlayerBar() {
   return (
     <footer
       aria-label="Reproductor"
-      className="relative flex flex-col gap-2 border-t border-white/5 bg-[#121e20] px-3 py-2 sm:grid sm:h-[76px] sm:grid-cols-[minmax(160px,1fr)_minmax(0,2fr)_minmax(140px,1fr)] sm:items-center sm:gap-4 sm:px-4 sm:py-0"
+      className="relative flex flex-col gap-2 border-t border-white/5 bg-[#131a21] px-3 py-2 sm:grid sm:h-[76px] sm:grid-cols-[minmax(160px,1fr)_minmax(0,2fr)_minmax(140px,1fr)] sm:items-center sm:gap-4 sm:px-4 sm:py-0"
     >
       {/* Acento turquesa ultra sutil en el borde superior */}
       <div aria-hidden className="accent-hairline pointer-events-none absolute inset-x-0 top-0 h-px" />
+
       {/* ---- Izquierda: pista actual ---- */}
       <div className="flex min-w-0 items-center gap-3">
         {current ? (
           <>
-            <Thumb
-              src={current.thumbnail}
-              alt={`Carátula de ${current.title}`}
-              className="h-14 w-14 shrink-0 rounded-md border border-white/5"
-              iconSize={22}
-            />
+            <button
+              type="button"
+              onClick={toggleExpandedPlayer}
+              aria-label="Abrir vista expandida"
+              title="Vista expandida"
+              className="shrink-0 rounded-md transition hover:scale-105 focus-visible:scale-105"
+            >
+              <Thumb
+                src={current.thumbnail}
+                alt={`Car�tula de ${current.title}`}
+                className="h-14 w-14 rounded-md border border-white/5"
+                iconSize={22}
+              />
+            </button>
             <div className="min-w-0">
               <p
                 className="truncate text-[13.5px] font-bold leading-tight text-white"
@@ -76,7 +84,7 @@ export default function PlayerBar() {
               type="button"
               onClick={() => toggleLike(current)}
               aria-pressed={isLiked}
-              aria-label={isLiked ? 'Quitar de Me gusta' : 'Añadir a Me gusta'}
+              aria-label={isLiked ? 'Quitar de Me gusta' : 'A�adir a Me gusta'}
               className="ml-1 shrink-0 rounded-full p-1.5 transition hover:scale-110"
             >
               <Heart
@@ -89,11 +97,11 @@ export default function PlayerBar() {
         ) : (
           <>
             <div className="grid h-14 w-14 shrink-0 place-items-center rounded-md bg-white/[0.06]">
-              <AudioLines size={22} className="text-[#4a5560]" aria-hidden />
+              <AudioLines size={22} className="text-[#3a4754]" aria-hidden />
             </div>
             <div className="min-w-0">
-              <p className="text-[13px] font-bold text-[#5f7280]">Nada suena</p>
-              <p className="text-[11px] text-[#4a5560]">Elige una canción para empezar</p>
+              <p className="text-[13px] font-bold text-[#66798a]">Nada suena</p>
+              <p className="text-[11px] text-[#4d4d4d]">Elige una canci�n para empezar</p>
             </div>
           </>
         )}
@@ -130,9 +138,9 @@ export default function PlayerBar() {
             onClick={togglePlay}
             disabled={!current}
             aria-label={
-              isLoading ? 'Cargando…' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducción' : 'Reproducir'
+              isLoading ? 'Cargando�' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducci�n' : 'Reproducir'
             }
-            title={isError ? 'Reintentar reproducción' : undefined}
+            title={isError ? 'Reintentar reproducci�n' : undefined}
             className="grid h-11 w-11 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30 sm:h-10 sm:w-10 active:scale-95"
           >
             {isLoading ? (
@@ -170,23 +178,40 @@ export default function PlayerBar() {
           </button>
         </div>
 
-        {/* Seekbar con tiempos */}
+        {/* Seekbar con tiempos + tooltip */}
         <div className="flex w-full max-w-[560px] items-center gap-2 text-[11px] tabular-nums text-[#8ca0af]">
           <span className="w-9 text-right">{formatTime(currentTime)}</span>
-          <input
-            type="range"
-            min={0}
-            max={Math.max(1, Math.floor(effectiveDuration))}
-            step={1}
-            value={Math.min(currentTime, effectiveDuration || currentTime)}
-            onChange={(e) => seekTo(Number(e.target.value))}
-            aria-label="Buscar en la canción"
-            aria-valuetext={`${formatTime(currentTime)} de ${formatTime(effectiveDuration)}`}
-            className="oct-range flex-1"
-            style={{ '--fill': `${pct}%`, '--buffer': `${Math.max(pct, bufferPct)}%` }}
-            disabled={!current}
-          />
-          <span className="w-9">{effectiveDuration > 0 ? formatTime(effectiveDuration) : '–:––'}</span>
+          <div className="relative flex-1">
+            <input
+              type="range"
+              min={0}
+              max={Math.max(1, Math.floor(effectiveDuration))}
+              step={1}
+              value={Math.min(currentTime, effectiveDuration || currentTime)}
+              onChange={(e) => seekTo(Number(e.target.value))}
+              onMouseMove={(e) => {
+                if (!current || !effectiveDuration) return
+                const rect = e.currentTarget.getBoundingClientRect()
+                const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+                setSeekTip({ text: formatTime(x * effectiveDuration), x: x * 100 })
+              }}
+              onMouseLeave={() => setSeekTip(null)}
+              aria-label="Buscar en la canci�n"
+              aria-valuetext={`${formatTime(currentTime)} de ${formatTime(effectiveDuration)}`}
+              className="oct-range w-full"
+              style={{ '--fill': `${pct}%`, '--buffer': `${Math.max(pct, bufferPct)}%` }}
+              disabled={!current}
+            />
+            {seekTip && (
+              <span
+                className="pointer-events-none absolute -top-7 -translate-x-1/2 rounded-md bg-black/90 px-2 py-1 text-[11px] font-bold tabular-nums text-white shadow-card"
+                style={{ left: `${seekTip.x}%` }}
+              >
+                {seekTip.text}
+              </span>
+            )}
+          </div>
+          <span className="w-9">{effectiveDuration > 0 ? formatTime(effectiveDuration) : '�:�'}</span>
         </div>
       </div>
 
@@ -196,15 +221,15 @@ export default function PlayerBar() {
           type="button"
           onClick={toggleQueue}
           aria-pressed={queueOpen}
-          aria-label="Cola de reproducción"
-          title="Cola de reproducción"
+          aria-label="Cola de reproducci�n"
+          title="Cola de reproducci�n"
           className={`relative rounded-md p-2 transition ${
             queueOpen ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'
           }`}
         >
           <ListMusic size={20} />
           {upcoming > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#15d3a2] px-1 text-[9px] font-black text-black">
+            <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#15d3a2] px-1 text-[9px] font-black text-[#062a1d]">
               {upcoming > 99 ? '99' : upcoming}
             </span>
           )}
@@ -247,4 +272,3 @@ export default function PlayerBar() {
     </footer>
   )
 }
-
