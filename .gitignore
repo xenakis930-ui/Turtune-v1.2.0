@@ -16,3 +16,7 @@ android/build/
 android/app/build/
 android/local.properties
 android/.idea/
+# Secretos de firma (NUNCA subir al repo)
+android/keystore/
+android/keystore-password.txt
+android/gradle.properties.local

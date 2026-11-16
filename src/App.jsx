@@ -56,7 +56,7 @@ export default function App() {
 
         <main className="main-ambient flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/[0.06] shadow-[0_18px_44px_rgba(0,0,0,0.35)]">
           <TopBar />
-          <div className="min-h-0 flex-1" role="main">
+          <div className="min-h-0 flex-1 view-enter" role="main" key={view}>
             {view === 'home' && <HomeView />}
             {view === 'search' && <SearchView />}
             {view === 'library' && <LibraryView />}

@@ -32,7 +32,7 @@ export default function TrackRow({ track, context, index, showHeader = true }) {
       onMouseLeave={() => setHover(false)}
       onKeyDown={(e) => e.key === 'Enter' && onPrimary()}
       onDoubleClick={onPrimary}
-      className="group grid grid-cols-[2rem_minmax(0,1fr)_2rem_3.5rem_2.5rem] items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-white/[0.07]"
+      className="group grid grid-cols-[2rem_minmax(0,1fr)_2rem_3.5rem_2.5rem] items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-white/[0.04] cursor-pointer"
     >
       {/* Índice / estado */}
       <button

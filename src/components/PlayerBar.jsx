@@ -133,7 +133,7 @@ export default function PlayerBar() {
               isLoading ? 'Cargando…' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducción' : 'Reproducir'
             }
             title={isError ? 'Reintentar reproducción' : undefined}
-            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30 sm:h-10 sm:w-10"
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30 sm:h-10 sm:w-10 active:scale-95"
           >
             {isLoading ? (
               <Loader2 size={20} className="animate-spin" aria-hidden />

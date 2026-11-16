@@ -17,10 +17,33 @@ android {
         }
         archivesBaseName = "Turtune"
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    // Cargar credenciales de firma desde signing.properties (gitignored) si existe
+    def signingPropsFile = file('signing.properties')
+    if (signingPropsFile.exists()) {
+        def signingProps = new Properties()
+        signingProps.load(new FileInputStream(signingPropsFile))
+        signingConfigs {
+            release {
+                storeFile file(signingProps['TURTUNE_KEYSTORE_PATH'])
+                storePassword signingProps['TURTUNE_KEYSTORE_PASSWORD']
+                keyAlias signingProps['TURTUNE_KEY_ALIAS']
+                keyPassword signingProps['TURTUNE_KEY_PASSWORD']
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+            }
+        }
+    } else {
+        buildTypes {
+            release {
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            }
         }
     }
 }

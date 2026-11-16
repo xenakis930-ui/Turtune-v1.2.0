@@ -19,6 +19,8 @@ export default function Sidebar() {
   const queueOpen = usePlayerStore((s) => s.queueOpen)
   const toggleQueue = usePlayerStore((s) => s.toggleQueue)
   const openImport = usePlayerStore((s) => s.openImport)
+  const playbackState = usePlayerStore((s) => s.playbackState)
+  const isPlaying = playbackState === 'PLAYING'
   const [version, setVersion] = useState('')
 
   useEffect(() => {
@@ -32,7 +34,11 @@ export default function Sidebar() {
         <img
           src={turtuneLogo}
           alt="Turtune — logotipo de la aplicación (tortuga con auriculares)"
-          className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(21,211,162,0.35)]"
+          className={`h-11 w-11 object-contain transition-all duration-500 ${
+            isPlaying
+              ? 'drop-shadow-[0_0_16px_rgba(21,211,162,0.55)] animate-pulse'
+              : 'drop-shadow-[0_0_14px_rgba(21,211,162,0.35)]'
+          }`}
           draggable={false}
         />
         <span className="leading-tight">

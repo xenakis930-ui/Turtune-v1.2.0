@@ -1,0 +1,7 @@
+# Plantilla de credenciales de firma.
+# Copia este archivo a signing.properties y rellena con tus datos.
+# signing.properties está en .gitignore — nunca lo subas al repo.
+TURTUNE_KEYSTORE_PATH=C:/ruta/al/turtune-release.jks
+TURTUNE_KEYSTORE_PASSWORD=tu_contraseña
+TURTUNE_KEY_ALIAS=turtune
+TURTUNE_KEY_PASSWORD=tu_contraseña
