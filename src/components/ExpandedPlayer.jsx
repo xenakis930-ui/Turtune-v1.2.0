@@ -1,5 +1,6 @@
 import { X, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, ListMusic, Volume2, Volume1, VolumeX } from '../lib/icons'
 import Thumb from './Thumb'
+import LyricsPanel from './LyricsPanel'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'
 import { formatTime } from '../lib/format'
@@ -164,6 +165,11 @@ export default function ExpandedPlayer() {
             style={{ '--fill': `${muted ? 0 : Math.round(volume * 100)}%` }}
           />
         </div>
+      </div>
+
+      {/* Letras sincronizadas */}
+      <div className="w-full max-w-md">
+        <LyricsPanel track={current} currentTime={currentTime} />
       </div>
 
       {/* Cola (compacta) */}
