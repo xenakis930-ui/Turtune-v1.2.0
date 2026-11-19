@@ -471,3 +471,774 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ============================================================
+   MEJORAS CSS MAXIMAS â€” capa adicional de pulido visual
+   ============================================================ */
+
+/* ---------- Variables CSS globales para theming ---------- */
+:root {
+  --color-base: #101a1b;
+  --color-elevated: #141f22;
+  --color-highlight: #18262a;
+  --color-pressed: #1e2c31;
+  --color-accent: #15d3a2;
+  --color-accent-hover: #4fe3b7;
+  --color-accent-dark: #0a8f75;
+  --color-accent-soft: rgba(21, 211, 162, 0.12);
+  --color-text: #e6f0f2;
+  --color-text-muted: #94a3b0;
+  --color-text-subtle: #6b7f8e;
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(21, 211, 162, 0.15);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --transition-fast: 0.12s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.35s ease;
+}
+
+/* ---------- TipografÃ­a mejorada ---------- */
+body {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+.text-display {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+/* ---------- Micro-animaciones para botones ---------- */
+button {
+  transition: transform var(--transition-fast), background-color var(--transition-fast),
+    color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+}
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Ripple effect en clicks ---------- */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.ripple:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 1;
+  transition: 0s;
+}
+
+/* ---------- Cards con elevaciÃ³n y hover refinado ---------- */
+.card {
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+.card:active {
+  transform: translateY(0);
+}
+
+/* ---------- ImÃ¡genes con blur-up (lazy loading) ---------- */
+.img-blur-up {
+  filter: blur(8px);
+  transition: filter 0.4s ease;
+}
+.img-blur-up.loaded {
+  filter: blur(0);
+}
+
+/* ---------- Skeleton mejorado con shimmer multi-direccional ---------- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #18262a 0%, #1e2c31 50%, #18262a 100%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s ease-in-out infinite;
+}
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---------- Empty states mÃ¡s atractivos ---------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+}
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.empty-state-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* ---------- Toast / notificaciones mejoradas ---------- */
+.toast {
+  background: linear-gradient(135deg, rgba(26, 36, 48, 0.95), rgba(16, 26, 27, 0.98));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 16px;
+  animation: toastIn 0.3s ease both;
+}
+@keyframes toastIn {
+  0% { opacity: 0; transform: translateY(12px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-exit {
+  animation: toastOut 0.25s ease both;
+}
+@keyframes toastOut {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(8px) scale(0.95); }
+}
+
+/* ---------- Modal / overlay mejorado ---------- */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease both;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.modal-content {
+  animation: modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes modalIn {
+  0% { opacity: 0; transform: scale(0.95) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- Form inputs mejorados ---------- */
+.input-field {
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.input-field:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+  outline: none;
+}
+.input-field::placeholder {
+  color: var(--color-text-subtle);
+}
+
+/* ---------- Chips / tags mejorados ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid rgba(21, 211, 162, 0.2);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+.chip:hover {
+  background: rgba(21, 211, 162, 0.2);
+  transform: scale(1.03);
+}
+.chip:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Badge con pulso ---------- */
+.badge-pulse {
+  position: relative;
+}
+.badge-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid var(--color-accent);
+  opacity: 0;
+  animation: badgePulse 2s ease-out infinite;
+}
+@keyframes badgePulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* ---------- Gradiente animado para fondos ---------- */
+.gradient-animated {
+  background: linear-gradient(135deg, #101a1b, #141f22, #101a1b);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- Indicador de reproducciÃ³n (barra animada) ---------- */
+.now-playing-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+.now-playing-bar span {
+  width: 3px;
+  background: var(--color-accent);
+  border-radius: 1px;
+  animation: nowPlaying 0.8s ease-in-out infinite;
+}
+.now-playing-bar span:nth-child(2) { animation-delay: 0.15s; }
+.now-playing-bar span:nth-child(3) { animation-delay: 0.3s; }
+.now-playing-bar span:nth-child(4) { animation-delay: 0.1s; }
+@keyframes nowPlaying {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+
+/* ---------- Mejora del reproductor expandido ---------- */
+.expanded-player-bg {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(21, 211, 162, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(90, 230, 136, 0.05) 0%, transparent 50%),
+    #0a0f14;
+}
+
+/* ---------- Mejora del mini reproductor ---------- */
+.mini-player-glow {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(21, 211, 162, 0.1),
+    0 0 20px rgba(21, 211, 162, 0.05);
+}
+
+/* ---------- Mejora de la queue panel ---------- */
+.queue-item {
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+.queue-item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateX(2px);
+}
+.queue-item.active {
+  background-color: var(--color-accent-soft);
+  border-left: 2px solid var(--color-accent);
+}
+
+/* ---------- Mejora de la sidebar ---------- */
+.sidebar-item {
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.sidebar-item:hover {
+  transform: translateX(2px);
+}
+.sidebar-item.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* ---------- Mejora del search input ---------- */
+.search-input {
+  transition: width var(--transition-slow), border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.search-input:focus {
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+/* ---------- Mejora de la biblioteca ---------- */
+.library-card {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.library-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- Efecto de brillo en hover (shimmer) ---------- */
+.shine-hover {
+  position: relative;
+  overflow: hidden;
+}
+.shine-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+  transition: left 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.shine-hover:hover::before {
+  left: 150%;
+}
+
+/* ---------- Separadores con gradiente ---------- */
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-border-strong),
+    transparent
+  );
+}
+
+/* ---------- Texto con sombra sutil ---------- */
+.text-shadow {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.text-shadow-strong {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Imagen con overlay de gradiente ---------- */
+.img-overlay {
+  position: relative;
+}
+.img-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.6) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+/* ---------- AnimaciÃ³n de corazÃ³n (me gusta) ---------- */
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.heart-pop {
+  animation: heartPop 0.4s ease;
+}
+
+/* ---------- AnimaciÃ³n de aÃ±adir a cola ---------- */
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.slide-in-right {
+  animation: slideInRight 0.3s ease both;
+}
+
+/* ---------- Mejora del expanded player ---------- */
+.expanded-player-enter {
+  animation: expandedPlayerIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes expandedPlayerIn {
+  0% { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- Mejora de la mini player ---------- */
+.mini-player-enter {
+  animation: miniPlayerIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes miniPlayerIn {
+  0% { opacity: 0; transform: scale(0.9) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- Mejora de la queue panel ---------- */
+.queue-panel-enter {
+  animation: queuePanelIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes queuePanelIn {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ---------- Mejora de los botones de reproducciÃ³n ---------- */
+.play-button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.play-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(21, 211, 162, 0.3);
+}
+.play-button:active {
+  transform: scale(0.95);
+}
+
+/* ---------- Mejora de la seekbar ---------- */
+.seekbar-container {
+  position: relative;
+}
+.seekbar-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---------- Mejora del volumen ---------- */
+.volume-slider {
+  transition: width 0.2s ease;
+}
+.volume-slider:hover {
+  width: 120px;
+}
+
+/* ---------- Mejora de los iconos ---------- */
+.icon-button {
+  transition: transform 0.12s ease, color 0.12s ease, background-color 0.12s ease;
+}
+.icon-button:hover {
+  transform: scale(1.1);
+}
+.icon-button:active {
+  transform: scale(0.95);
+}
+
+/* ---------- Mejora de la navegaciÃ³n ---------- */
+.nav-item {
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.nav-item:hover {
+  transform: translateX(2px);
+}
+.nav-item.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* ---------- Mejora de la biblioteca ---------- */
+.library-item {
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+.library-item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateX(2px);
+}
+
+/* ---------- Mejora de las playlists ---------- */
+.playlist-card {
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+.playlist-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+
+/* ---------- Mejora del search ---------- */
+.search-result {
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+.search-result:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateX(2px);
+}
+
+/* ---------- Mejora de los toggles ---------- */
+.toggle-switch {
+  transition: background-color var(--transition-base);
+}
+.toggle-switch.on {
+  background-color: var(--color-accent);
+}
+.toggle-switch.off {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.toggle-knob {
+  transition: transform var(--transition-base);
+}
+.toggle-switch.on .toggle-knob {
+  transform: translateX(100%);
+}
+
+/* ---------- Mejora de los progress bars ---------- */
+.progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* ---------- Mejora de los badges ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--color-accent);
+  color: #062a1d;
+}
+
+/* ---------- Mejora de los avatares ---------- */
+.avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  transition: border-color var(--transition-fast);
+}
+.avatar:hover {
+  border-color: var(--color-accent);
+}
+
+/* ---------- Mejora de los dividers ---------- */
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 8px 0;
+}
+
+/* ---------- Mejora de los tooltips ---------- */
+.tooltip-enhanced {
+  position: relative;
+}
+.tooltip-enhanced::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+  box-shadow: var(--shadow-sm);
+}
+.tooltip-enhanced:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* ---------- Mejora de los empty states ---------- */
+.empty-state-enhanced {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 24px;
+  text-align: center;
+}
+.empty-state-enhanced-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+}
+.empty-state-enhanced-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.empty-state-enhanced-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+/* ---------- Mejora de la tipografÃ­a ---------- */
+.text-hero {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.text-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.text-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+.text-body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+.text-caption {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Mejora de los iconos ---------- */
+.icon-sm { width: 14px; height: 14px; }
+.icon-md { width: 18px; height: 18px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 32px; height: 32px; }
+
+/* ---------- Mejora del layout ---------- */
+.container-narrow {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.container-medium {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.container-wide {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Mejora de los grids ---------- */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .grid-cards { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+}
+@media (min-width: 1024px) {
+  .grid-cards { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+}
+
+/* ---------- Mejora de las transiciones de pÃ¡gina ---------- */
+.page-transition {
+  animation: pageTransition 0.3s ease both;
+}
+@keyframes pageTransition {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Mejora del dark mode (ya es dark por defecto) ---------- */
+/* Variables para light mode futuro */
+@media (prefers-color-scheme: light) {
+  /* Placeholder para tema claro futuro */
+}
+
+/* ---------- Mejora de la impresiÃ³n ---------- */
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print { display: none !important; }
+}
+
+/* ---------- Mejora final: suavizado de bordes ---------- */
+.rounded-soft {
+  border-radius: var(--radius-md);
+}
+.rounded-softer {
+  border-radius: var(--radius-lg);
+}
+.rounded-softest {
+  border-radius: var(--radius-xl);
+}
