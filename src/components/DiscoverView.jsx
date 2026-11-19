@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+﻿import { useEffect, useState, useMemo } from 'react'
 import { Compass, Sparkles, TrendingUp, Music2, Play, Pause, Loader2 } from '../lib/icons'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { searchBackend } from '../lib/api'
@@ -7,12 +7,12 @@ import TrackCard from './TrackCard'
 
 const GENRES = [
   { label: 'Pop', query: 'top pop hits 2026' },
-  { label: 'Reggaetón', query: 'reggaeton hits 2026' },
+  { label: 'ReggaetÃ³n', query: 'reggaeton hits 2026' },
   { label: 'Hip-hop', query: 'hip hop top hits' },
   { label: 'Trap latino', query: 'trap latino hits' },
-  { label: 'Electrónica', query: 'electronic dance hits' },
+  { label: 'ElectrÃ³nica', query: 'electronic dance hits' },
   { label: 'Rock', query: 'rock hits 2026' },
-  { label: 'Baladas', query: 'baladas románticas' },
+  { label: 'Baladas', query: 'baladas romÃ¡nticas' },
   { label: 'Corridos', query: 'corridos tumbados hits' },
   { label: 'K-Pop', query: 'k-pop top hits' },
   { label: 'Indie', query: 'indie alternative hits' },
@@ -55,7 +55,7 @@ export default function DiscoverView() {
   const [genreTracks, setGenreTracks] = useState([])
   const [loadingGenre, setLoadingGenre] = useState(false)
 
-  // Tendencias: búsqueda de hits actuales
+  // Tendencias: bÃºsqueda de hits actuales
   useEffect(() => {
     let cancelled = false
     setLoadingTrending(true)
@@ -80,7 +80,7 @@ export default function DiscoverView() {
     )].slice(0, 4)
 
     if (artists.length === 0) {
-      // Sin historial: mostrar algo genérico
+      // Sin historial: mostrar algo genÃ©rico
       searchBackend('discover new music 2026')
         .then((res) => { if (!cancelled) setForYou(res?.items ?? []) })
         .catch(() => { if (!cancelled) setForYou([]) })
@@ -136,13 +136,13 @@ export default function DiscoverView() {
             Descubrir<span className="text-[#15d3a2]">.</span>
           </h1>
           <p className="text-[12px] text-[#8ca0af]">
-            Música nueva basada en lo que escuchas
+            MÃºsica nueva basada en lo que escuchas
           </p>
         </div>
       </div>
 
-      {/* Géneros */}
-      <section aria-label="Géneros" className="mt-6">
+      {/* GÃ©neros */}
+      <section aria-label="GÃ©neros" className="mt-6">
         <div className="scroll-area -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {GENRES.map((g) => (
             <button
@@ -161,7 +161,7 @@ export default function DiscoverView() {
         </div>
       </section>
 
-      {/* Resultado de género */}
+      {/* Resultado de gÃ©nero */}
       {activeGenre && (
         <Section title={activeGenre.label} icon={Music2} loading={loadingGenre}>
           {genreTracks.length === 0 && !loadingGenre ? (
@@ -238,4 +238,3 @@ export default function DiscoverView() {
     </div>
   )
 }
-EOF
