@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Sliders, Check } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { EQ_PRESETS } from '../audio/equalizer'
@@ -6,7 +6,7 @@ import { EQ_PRESETS } from '../audio/equalizer'
 const PRESET_NAMES = ['flat', 'rock', 'pop', 'jazz', 'classical', 'bass', 'vocal', 'electronic']
 const PRESET_LABELS = {
   flat: 'Plano', rock: 'Rock', pop: 'Pop', jazz: 'Jazz',
-  classical: 'Clásica', bass: 'Bajos', vocal: 'Vocal', electronic: 'Electrónica',
+  classical: 'ClÃ¡sica', bass: 'Bajos', vocal: 'Vocal', electronic: 'ElectrÃ³nica',
 }
 
 export default function EqualizerPanel() {
@@ -98,4 +98,3 @@ export default function EqualizerPanel() {
     </div>
   )
 }
-EOF

@@ -1,5 +1,5 @@
-/**
- * equalizer.js — Ecualizador de 3 bandas (bajos, medios, agudos) vía Web Audio API.
+﻿/**
+ * equalizer.js â€” Ecualizador de 3 bandas (bajos, medios, agudos) vÃ­a Web Audio API.
  * Inserta un grafo de audio entre el <audio> y los altavoces.
  * Solo funciona en web/Electron (no en Android nativo, donde ExoPlayer maneja el audio).
  */
@@ -53,7 +53,7 @@ export function initEqualizer(audioEl) {
     gain = ctx.createGain()
     gain.gain.value = 1
 
-    // Cadena: source → bass → mid → treble → gain → destination
+    // Cadena: source â†’ bass â†’ mid â†’ treble â†’ gain â†’ destination
     source.connect(bass)
     bass.connect(mid)
     mid.connect(treble)
@@ -70,7 +70,7 @@ export function setEqualizerEnabled(on) {
   enabled = !!on
   if (!connected) return
   if (enabled) {
-    // reconectar la cadena (ya está conectada, solo aseguramos)
+    // reconectar la cadena (ya estÃ¡ conectada, solo aseguramos)
   } else {
     // bypass: desconectar filtros, conectar source directo a destination
     try {
@@ -120,4 +120,3 @@ export function getEqualizerState() {
 export function isEqualizerConnected() {
   return connected
 }
-EOF
