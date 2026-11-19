@@ -6,11 +6,13 @@ descarga ni decodifica el vídeo: menor consumo de red, RAM y CPU.
 
 - **Desktop:** Electron 33 (main process Node.js, `contextIsolation` + `sandbox`)
 - **Frontend:** React 18 + Vite 6 + Tailwind CSS 3 + Lucide Icons
-- **Diseño:** tema oscuro minimalista (`#10161C`) con acento turquesa (`#22D3EE`)
+- **Diseño:** tema oscuro minimalista (`#10161C`) con acento turquesa (`#15D3A2`) derivado del logo tortuga
 - **Extracción:** `yt-dlp` local (`tools/yt-dlp.exe`)
 - **Audio:** HTML5 `Audio` + **proxy HTTP local** (`127.0.0.1:puerto_efímero`) con `Range` (seek real)
 - **Estado:** zustand (+ `persist`)
-- **Tests:** `node --test` (núcleo sin red) · **CI:** GitHub Actions (Windows)
+- **Tests:** `node --test` (13 tests: 8 núcleo + 5 YouTube Data API) · **CI:** GitHub Actions (Windows)
+- **Android:** Capacitor + ExoPlayer (servicio en primer plano, audio en segundo plano)
+- **Backend:** Express API reutilizando `electron/core/` (Dockerfile incluido)
 
 > La reproducción usa el índice público de YouTube vía `yt-dlp`. Uso personal;
 > respeta los Términos del Servicio y los derechos de autor.
@@ -46,8 +48,10 @@ Smoke test (sin red): `npm run test:smoke`.
 octave/
 ├─ tools/yt-dlp.exe            ← binario oficial (búsqueda y streams)
 ├─ electron/
-│  ├─ main.js                  ← ventana, IPC (incl. account:* para OAuth)
+│  ├─ main.js                  ← ventana, IPC, tray, auto-updater, mini reproductor
 │  ├─ preload.js               ← contextBridge → window.turtune (sandbox)
+│  ├─ mini-preload.js          ← puente del mini reproductor flotante
+│  ├─ mini.html (public/)      ← gadget flotante (HTML standalone)
 │  ├─ google.js                ← OAuth loopback + tokens (opcional, avanzado)
 │  ├─ browserSession.js        ← detección de sesión Edge/Chrome/Firefox (vía sencilla)
 │  ├─ youtube.js               ← YouTube Data API v3 (listas, items, duraciones)
@@ -63,14 +67,16 @@ octave/
 │  ├─ audio/mediaSession.js    ← teclas multimedia + metadatos (Media Session API)
 │  ├─ store/usePlayerStore.js  ← current/queue/playbackState + persistencia de cola
 │  ├─ components/              ← TopBar, Sidebar, HomeView, SearchView, LibraryView,
-│  │                             PlayerBar, QueuePanel, ImportPlaylistModal, ShortcutsOverlay…
+│  │                             PlayerBar, QueuePanel, ImportPlaylistModal,
+│  │                             ShortcutsOverlay, ExpandedPlayer, MobileNav…
 │  ├─ hooks/useKeyboardShortcuts.js
 │  └─ demo/                    ← modo demo sin Electron (preview en navegador)
-├─ test/core.test.js           ← 8 tests de humo (sin red)
+├─ test/core.test.js           ← 8 tests del núcleo (sin red)
 ├─ test/youtube.test.js        ← 5 tests de la Data API (parser + normalizadores)
 ├─ .github/workflows/ci.yml    ← install → test → build (windows-latest)
+├─ .github/workflows/release.yml ← release on tag v* (NSIS + latest.yml + blockmap)
 ├─ build/icon.ico|png          ← icono generado (círculo turquesa + waveform)
-└─ package.json                ← scripts: dev / build / test / dist (NSIS)
+└─ package.json                ← scripts: dev / build / test / dist / pack
 ```
 
 ## Requisitos
@@ -106,10 +112,9 @@ Al arrancar, Turtune comprueba si hay una versión nueva publicada en **GitHub R
 4. También puedes comprobarlo manualmente en **Ajustes → Actualizaciones → Buscar ahora**.
 
 **Para publicar un release:**
-1. Crea un repo público `turtune` en GitHub (o ajusta `build.publish` en `package.json` a tu fork).
-2. Haz push del código y crea un tag: `git tag v1.2.0 && git push origin v1.2.0`.
-3. El workflow **Release** (`.github/workflows/release.yml`) compila en `windows-latest`, corre tests y publica instalador + `latest.yml` en la página de Releases (`GH_TOKEN` lo inyecta Actions).
-4. Los usuarios en x.y.z verán el aviso automáticamente.
+1. Haz push del código y crea un tag: `git tag v1.3.0 && git push origin v1.3.0`.
+2. El workflow **Release** (`.github/workflows/release.yml`) compila en `windows-latest`, corre tests y publica instalador + `latest.yml` en la página de Releases (`GH_TOKEN` lo inyecta Actions).
+3. Los usuarios en x.y.z verán el aviso automáticamente.
 
 > Si hoy prefieres no usar GitHub todavía, la app funciona igual sin releases publicados: el botón «Buscar ahora» mostrará «sin canal de actualización» (no rompe nada).
 
@@ -141,8 +146,8 @@ El `.asar` incluye `dist/` y `electron/`; `tools/yt-dlp.exe` viaja **fuera del a
 Solo si prefieres no usar las cookies del navegador. Requiere configuración única (~5 min, gratis):
 
 1. [Google Cloud Console](https://console.cloud.google.com) → **Crear proyecto** · 2. Habilita **«YouTube Data API v3»** ([enlace directo](https://console.cloud.google.com/apis/library/youtube.googleapis.com)) · 3. **Pantalla de consentimiento** → Externo → modo **«Prueba»** → añade **tu Gmail** como usuario de prueba · 4. **Credenciales → «ID de cliente de OAuth» → «Aplicación de escritorio»**.
-5. **Ajustes → Avanzado → pega Client ID + Secret → Guardar y vincular** → autoriza en el navegador → vuelve a Turtune.
-6. En **Tu biblioteca** pulsa **Sincronizar** (importa los nombres de todas tus playlists) y gestiona como arriba.
+2. **Ajustes → Avanzado → pega Client ID + Secret → Guardar y vincular** → autoriza en el navegador → vuelve a Turtune.
+3. En **Tu biblioteca** pulsa **Sincronizar** (importa los nombres de todas tus playlists) y gestiona como arriba.
 
 - *Modo Prueba* caduca el permiso **cada 7 días** (pulsa «Conectar» otra vez, 10 s); o publica el proyecto para uso permanente (aviso de app no verificada que puedes aceptar como propietario).
 - Scope: `youtube.readonly` — Turtune **no** puede subir, borrar ni modificar nada tuyo.
@@ -153,7 +158,7 @@ Solo si prefieres no usar las cookies del navegador. Requiere configuración ún
 
 ```powershell
 npm.cmd run selftest -- "nuvole bianche"   # búsqueda + resolución (≈3 s)
-npm.cmd test                                # 8 tests del núcleo (sin red)
+npm.cmd test                                # 13 tests (8 núcleo + 5 YouTube Data API)
 ```
 
 ## Atajos de teclado
@@ -179,6 +184,12 @@ npm.cmd test                                # 8 tests del núcleo (sin red)
 - **Prefetch** del siguiente stream al empezar la pista actual.
 - **Cola** lateral: eliminar ítems futuros, vaciar, click para saltar (cuenta en el badge).
 - **Me gusta** e **historial** persistentes (localStorage).
+- **Mini reproductor flotante** (gadget): ventana pequeña siempre encima, arrastrable, con play/pause, anterior/siguiente y cierre. Se sincroniza automáticamente con la app principal. Accesible desde el botón de la barra del player o el menú de la bandeja.
+- **Bandeja del sistema**: minimizar a tray, controles rápidos (play/next/prev), restaurar ventana.
+- **Reproductor expandido**: vista a pantalla completa con carátula grande, seekbar y controles.
+- **Ambilight**: resplandor de fondo basado en la carátula del track actual.
+- **Animaciones**: transiciones de vista, flash verde al añadir a cola, skeletons de carga, tooltip en seekbar.
+- **Persistencia**: cola, likes, historial, búsquedas recientes, volumen y playlists en localStorage.
 
 ## Solución de problemas
 
@@ -190,6 +201,7 @@ npm.cmd test                                # 8 tests del núcleo (sin red)
 | Sin audio pero hay portadas | Reinicia la app (el puerto del proxy cambia en cada arranque). DevTools en dev: `Ctrl+Shift+I`. |
 | SmartScreen bloquea el instalador | Binario sin firma; "Más información → Ejecutar de todas formas" o firma con certificado real. |
 | `npm` no reconocido | Usa `npm.cmd` (política de ejecución de PowerShell). |
+| Pantalla negra al arrancar | Error de runtime en renderer (revisa consola DevTools). Causa típica: variable no definida en un componente. |
 
 ## Límites conocidos / honestidad técnica
 
@@ -198,3 +210,4 @@ npm.cmd test                                # 8 tests del núcleo (sin red)
 - Algunos vídeos sin stream m4a caen a opus (nunca a vídeo).
 - La cola persistida se recorta a 100 pistas (límite de almacenamiento).
 - Sin sincronización de cuentas: "Me gusta" es local, no se sube a YouTube Music.
+- El mini reproductor requiere que la app principal esté abierta (no reproduce audio por sí mismo).
