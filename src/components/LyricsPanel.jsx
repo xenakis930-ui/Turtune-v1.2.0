@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
+﻿import { useEffect, useState, useRef } from 'react'
 
 /**
- * Letras sincronizadas vía lrclib.net (API gratuita, sin key).
- * Muestra las letras con scroll automático según currentTime.
+ * Letras sincronizadas vÃ­a lrclib.net (API gratuita, sin key).
+ * Muestra las letras con scroll automÃ¡tico segÃºn currentTime.
  */
 export default function LyricsPanel({ track, currentTime }) {
   const [lines, setLines] = useState(null) // array of { time, text } | null (loading) | [] (none)
@@ -50,7 +50,7 @@ export default function LyricsPanel({ track, currentTime }) {
   if (lines === null) {
     return (
       <div className="flex items-center justify-center py-8 text-[12px] text-[#8ca0af]">
-        Buscando letras…
+        Buscando letrasâ€¦
       </div>
     )
   }
@@ -64,7 +64,7 @@ export default function LyricsPanel({ track, currentTime }) {
   if (lines.length === 0) {
     return (
       <div className="py-8 text-center text-[12px] text-[#8ca0af]">
-        No hay letras disponibles para esta canción.
+        No hay letras disponibles para esta canciÃ³n.
       </div>
     )
   }
@@ -93,7 +93,7 @@ export default function LyricsPanel({ track, currentTime }) {
               : 'text-[#8ca0af]'
           }`}
         >
-          {l.text || '♪'}
+          {l.text || 'â™ª'}
         </p>
       ))}
     </div>
@@ -114,4 +114,3 @@ function parseLrc(lrc) {
   }
   return out.sort((a, b) => a.time - b.time)
 }
-EOF

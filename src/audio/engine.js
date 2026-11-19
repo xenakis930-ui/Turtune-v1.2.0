@@ -57,7 +57,8 @@ function nativeInit() {
 }
 
 let wired = false
-let loadToken = 0 // evita carreras cuando el usuario salta de pista rápido
+let loadToken = 0
+let sleepTimerHandle = null // evita carreras cuando el usuario salta de pista rápido
 
 const s = () => usePlayerStore.getState()
 
