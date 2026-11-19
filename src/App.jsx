@@ -16,6 +16,7 @@ import ExpandedPlayer from './components/ExpandedPlayer'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore, PLAYBACK } from './store/usePlayerStore'
 import { initEngine, togglePlay, next, previous, applySleepTimer } from './audio/engine'
+import { setEqualizerEnabled, setEqualizerBands, applyEqualizerPreset } from './audio/equalizer'
 
 /**
  * Layout raíz estilo Spotify:
@@ -53,6 +54,21 @@ export default function App() {
       const unsub = usePlayerStore.subscribe(syncMini)
       off.push(() => { try { unsub() } catch { /* noop */ } })
     }
+    // Ecualizador: aplicar cambios
+    const applyEq = () => {
+      const st = usePlayerStore.getState()
+      setEqualizerEnabled(st.eqEnabled)
+      if (st.eqPreset && st.eqPreset !== 'custom') applyEqualizerPreset(st.eqPreset)
+      else setEqualizerBands(st.eqBands)
+    }
+    applyEq()
+    const unsubEq = usePlayerStore.subscribe((state) => {
+      setEqualizerEnabled(state.eqEnabled)
+      if (state.eqPreset && state.eqPreset !== 'custom') applyEqualizerPreset(state.eqPreset)
+      else setEqualizerBands(state.eqBands)
+    })
+    off.push(() => { try { unsubEq() } catch { /* noop */ } })
+
     // Temporizador de sueÃ±o
     applySleepTimer(usePlayerStore.getState().sleepTimer)
     const unsubSleep = usePlayerStore.subscribe((state) => applySleepTimer(state.sleepTimer))

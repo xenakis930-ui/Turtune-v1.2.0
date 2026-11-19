@@ -42,6 +42,9 @@ export const usePlayerStore = create(
       repeat: 'off', // 'off' | 'all' | 'one'
       autoplay: true, // radio infinita: al terminar la cola, busca pistas relacionadas
       sleepTimer: null, // minutos hasta detener (null = desactivado)
+      eqEnabled: false,
+      eqPreset: 'flat',
+      eqBands: { bass: 0, mid: 0, treble: 0 },
       queueOpen: false,
 
       setPlaybackState: (playbackState) => set({ playbackState }),
@@ -93,6 +96,9 @@ export const usePlayerStore = create(
       toggleShuffle: () => set((s) => ({ shuffle: !s.shuffle })),
       toggleAutoplay: () => set((s) => ({ autoplay: !s.autoplay })),
       setSleepTimer: (minutes) => set({ sleepTimer: minutes }),
+      setEqEnabled: (on) => set({ eqEnabled: on }),
+      setEqPreset: (name) => set({ eqPreset: name }),
+      setEqBands: (bands) => set((s) => ({ eqBands: { ...s.eqBands, ...bands } })) ,
       cycleRepeat: () =>
         set((s) => ({ repeat: s.repeat === 'off' ? 'all' : s.repeat === 'all' ? 'one' : 'off' })),
       toggleQueue: () => set((s) => ({ queueOpen: !s.queueOpen })),
