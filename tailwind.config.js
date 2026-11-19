@@ -38,11 +38,21 @@ export default {
           '0%, 100%': { transform: 'scaleY(0.3)' },
           '50%': { transform: 'scaleY(1)' },
         },
+        staggerIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        flashGreen: {
+          '0%': { backgroundColor: 'rgba(21, 211, 162, 0.18)' },
+          '100%': { backgroundColor: 'transparent' },
+        },
       },
       animation: {
         fadeUp: 'fadeUp 0.35s ease both',
         shimmer: 'shimmer 1.4s infinite',
         eq: 'eq 0.9s ease-in-out infinite',
+        staggerIn: 'staggerIn 0.35s ease both',
+        flashGreen: 'flashGreen 0.6s ease both',
       },
     },
   },

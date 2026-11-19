@@ -272,8 +272,202 @@ body {
   text-wrap: balance;
 }
 
+/* ---------- Focus ring mejorado (más visible, accesible) ---------- */
 :focus-visible {
   outline: 2px solid #15d3a2;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* ---------- Glassmorphism para paneles flotantes ---------- */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(26, 36, 48, 0.85), rgba(16, 26, 27, 0.92));
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ---------- Botones con press feedback ---------- */
+.btn-press {
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-press:active {
+  transform: scale(0.96);
+}
+.btn-press:hover {
+  box-shadow: 0 4px 12px rgba(21, 211, 162, 0.15);
+}
+
+/* ---------- Glow sutil en hover de cards ---------- */
+.card-glow {
+  transition: box-shadow 0.25s ease, transform 0.16s ease, border-color 0.2s ease;
+}
+.card-glow:hover {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(21, 211, 162, 0.15),
+    0 0 20px rgba(21, 211, 162, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ---------- Animación de entrada escalonada ---------- */
+.stagger-in > * {
+  animation: staggerIn 0.35s ease both;
+}
+.stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-in > *:nth-child(2) { animation-delay: 40ms; }
+.stagger-in > *:nth-child(3) { animation-delay: 80ms; }
+.stagger-in > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 160ms; }
+.stagger-in > *:nth-child(6) { animation-delay: 200ms; }
+.stagger-in > *:nth-child(7) { animation-delay: 240ms; }
+.stagger-in > *:nth-child(8) { animation-delay: 280ms; }
+@keyframes staggerIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Pulse suave para indicadores activos ---------- */
+.pulse-soft {
+  animation: pulseSoft 2s ease-in-out infinite;
+}
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ---------- Gradiente de texto turquesa ---------- */
+.text-gradient-accent {
+  background: linear-gradient(135deg, #15d3a2, #5ae688);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------- Borde animado en hover ---------- */
+.border-glow-hover {
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+.border-glow-hover:hover {
+  border-color: rgba(21, 211, 162, 0.4);
+  box-shadow: 0 0 0 1px rgba(21, 211, 162, 0.1);
+}
+
+/* ---------- Loader spinner turquesa ---------- */
+.spinner-accent {
+  border: 2px solid rgba(21, 211, 162, 0.2);
+  border-top-color: #15d3a2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Mejora de contraste en texto secundario ---------- */
+.text-muted {
+  color: #94a3b0;
+}
+.text-subtle {
+  color: #6b7f8e;
+}
+
+/* ---------- Transición suave de color de fondo ---------- */
+.bg-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ---------- Efecto de profundidad en modales ---------- */
+.modal-depth {
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- Scrollbar más elegante (más delgada) ---------- */
+.scroll-area::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(21, 211, 162, 0.25);
+  border-radius: 9999px;
+}
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(21, 211, 162, 0.45);
+}
+
+/* ---------- Animación de pulso para el logo cuando suena ---------- */
+.logo-pulse {
+  animation: logoPulse 2s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(21, 211, 162, 0.3)); }
+  50% { filter: drop-shadow(0 0 16px rgba(21, 211, 162, 0.6)); }
+}
+
+/* ---------- Tooltip mejorado ---------- */
+.tooltip {
+  position: relative;
+}
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+}
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* ---------- Mejora del range input (más suave) ---------- */
+.oct-range {
+  transition: height 0.15s ease;
+}
+.oct-range:hover {
+  height: 6px;
+}
+
+/* ---------- Responsive: mejoras para móvil ---------- */
+@media (max-width: 768px) {
+  .scroll-area {
+    -webkit-overflow-scrolling: touch;
+  }
+  .main-ambient {
+    background-image: radial-gradient(
+      150% 40% at 50% -5%,
+      rgba(21, 211, 162, 0.1),
+      transparent 50%
+    );
+  }
+}
+
+/* ---------- Reducción de movimiento (accesibilidad) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
