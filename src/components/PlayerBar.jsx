@@ -1,7 +1,7 @@
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart,
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
-  PictureInPicture2, Infinity as InfinityIcon, Clock,
+  PictureInPicture2, Infinity as InfinityIcon, Clock, Sliders,
 } from '../lib/icons'
 import Thumb from './Thumb'
 import { useState } from 'react'
@@ -246,6 +246,15 @@ export default function PlayerBar() {
           className={'rounded-md p-2 transition ' + (sleepTimer ? 'text-[#15d3a2] bg-[#15d3a2]/10' : 'text-[#8ca0af] hover:bg-white/5 hover:text-white')}
         >
           <Clock size={19} />
+        </button>
+        <button
+          type="button"
+          onClick={toggleExpandedPlayer}
+          aria-label="Ecualizador y letras"
+          title="Ecualizador y letras (reproductor expandido)"
+          className="rounded-md p-2 text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
+        >
+          <Sliders size={19} />
         </button>
         <button
           type="button"
