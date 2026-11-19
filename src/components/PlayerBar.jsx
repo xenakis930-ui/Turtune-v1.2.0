@@ -1,6 +1,7 @@
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart,
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
+  PictureInPicture2,
 } from '../lib/icons'
 import Thumb from './Thumb'
 import { useState } from 'react'
@@ -64,7 +65,7 @@ export default function PlayerBar() {
             >
               <Thumb
                 src={current.thumbnail}
-                alt={`Car�tula de ${current.title}`}
+                alt={`Carátula de ${current.title}`}
                 className="h-14 w-14 rounded-md border border-white/5"
                 iconSize={22}
               />
@@ -84,7 +85,7 @@ export default function PlayerBar() {
               type="button"
               onClick={() => toggleLike(current)}
               aria-pressed={isLiked}
-              aria-label={isLiked ? 'Quitar de Me gusta' : 'A�adir a Me gusta'}
+              aria-label={isLiked ? 'Quitar de Me gusta' : 'Añadir a Me gusta'}
               className="ml-1 shrink-0 rounded-full p-1.5 transition hover:scale-110"
             >
               <Heart
@@ -101,7 +102,7 @@ export default function PlayerBar() {
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-bold text-[#66798a]">Nada suena</p>
-              <p className="text-[11px] text-[#4d4d4d]">Elige una canci�n para empezar</p>
+              <p className="text-[11px] text-[#4d4d4d]">Elige una canción para empezar</p>
             </div>
           </>
         )}
@@ -138,9 +139,9 @@ export default function PlayerBar() {
             onClick={togglePlay}
             disabled={!current}
             aria-label={
-              isLoading ? 'Cargando�' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducci�n' : 'Reproducir'
+              isLoading ? 'Cargando…' : isPlaying ? 'Pausar' : isError ? 'Reintentar reproducción' : 'Reproducir'
             }
-            title={isError ? 'Reintentar reproducci�n' : undefined}
+            title={isError ? 'Reintentar reproducción' : undefined}
             className="grid h-11 w-11 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:pointer-events-none disabled:opacity-30 sm:h-10 sm:w-10 active:scale-95"
           >
             {isLoading ? (
@@ -196,7 +197,7 @@ export default function PlayerBar() {
                 setSeekTip({ text: formatTime(x * effectiveDuration), x: x * 100 })
               }}
               onMouseLeave={() => setSeekTip(null)}
-              aria-label="Buscar en la canci�n"
+              aria-label="Buscar en la canción"
               aria-valuetext={`${formatTime(currentTime)} de ${formatTime(effectiveDuration)}`}
               className="oct-range w-full"
               style={{ '--fill': `${pct}%`, '--buffer': `${Math.max(pct, bufferPct)}%` }}
@@ -211,7 +212,7 @@ export default function PlayerBar() {
               </span>
             )}
           </div>
-          <span className="w-9">{effectiveDuration > 0 ? formatTime(effectiveDuration) : '�:�'}</span>
+          <span className="w-9">{effectiveDuration > 0 ? formatTime(effectiveDuration) : '–:–'}</span>
         </div>
       </div>
 
@@ -219,10 +220,20 @@ export default function PlayerBar() {
       <div className="flex items-center justify-end gap-3">
         <button
           type="button"
+          onClick={() => { try { window.turtune?.mini?.toggle?.() } catch { /* noop */ } }}
+          aria-label="Mini reproductor flotante"
+          title="Mini reproductor (gadget)"
+          className="rounded-md p-2 text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
+        >
+          <PictureInPicture2 size={19} />
+        </button>
+
+        <button
+          type="button"
           onClick={toggleQueue}
           aria-pressed={queueOpen}
-          aria-label="Cola de reproducci�n"
-          title="Cola de reproducci�n"
+          aria-label="Cola de reproducción"
+          title="Cola de reproducción"
           className={`relative rounded-md p-2 transition ${
             queueOpen ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'
           }`}

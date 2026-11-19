@@ -1,4 +1,4 @@
-﻿import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
+import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { getAppVersion } from '../lib/api'
 import { useEffect, useState } from 'react'
@@ -11,7 +11,7 @@ const NAV = [
   { id: 'settings', label: 'Ajustes', Icon: Settings },
 ]
 
-/** Barra lateral fija: logo, navegaci�n, atajo a Me gusta y tarjeta de sesi�n. */
+/** Barra lateral fija: logo, navegación, atajo a Me gusta y tarjeta de sesión. */
 export default function Sidebar() {
   const view = usePlayerStore((s) => s.view)
   const setView = usePlayerStore((s) => s.setView)
@@ -49,8 +49,8 @@ export default function Sidebar() {
         </span>
       </div>
 
-      {/* Navegaci�n principal */}
-      <nav aria-label="Navegaci�n principal">
+      {/* Navegación principal */}
+      <nav aria-label="Navegación principal">
         <ul className="flex flex-col gap-1">
           {NAV.map(({ id, label, Icon }) => {
             const active = view === id
@@ -77,7 +77,7 @@ export default function Sidebar() {
       {/* Atajos de biblioteca */}
       <div className="mt-2 border-t border-white/10 pt-3">
         <p className="px-3 pb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#72868f]">
-          Colecci�n
+          Colección
         </p>
         <button
           type="button"
@@ -101,7 +101,7 @@ export default function Sidebar() {
           <span className="grid h-8 w-8 place-items-center rounded-md bg-white/[0.08]">
             <ListMusic size={16} aria-hidden />
           </span>
-          <span className="flex-1 text-left">Cola de reproducci�n</span>
+          <span className="flex-1 text-left">Cola de reproducción</span>
         </button>
         <button
           type="button"
@@ -117,7 +117,7 @@ export default function Sidebar() {
 
       <div className="mt-auto rounded-lg border border-white/[0.05] bg-white/[0.03] p-3 text-[11px] leading-snug text-[#72868f]">
         <p className="font-semibold text-[#8ca0af]">Motor de audio</p>
-        <p className="mt-1">yt-dlp � solo audio (m4a/opus) � sin v�deo</p>
+        <p className="mt-1">yt-dlp · solo audio (m4a/opus) · sin vídeo</p>
         {version && <p className="mt-1 tabular-nums text-[#5f7280]">Turtune v{version}</p>}
       </div>
 

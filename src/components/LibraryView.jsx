@@ -139,7 +139,7 @@ export default function LibraryView() {
 }
 
 
-/* ---------- Mis playlists (colecci�n local � sincronizable) ---------- */
+/* ---------- Mis playlists (colección local · sincronizable) ---------- */
 
 function YtPlaylistsSection() {
   const myPlaylists = usePlayerStore((s) => s.myPlaylists)
@@ -169,7 +169,7 @@ function YtPlaylistsSection() {
     for (const p of res.items) {
       savePlaylist({ id: p.id, title: p.title, itemCount: p.itemCount, thumbnail: p.thumbnail })
     }
-    pushToast('info', `${res.items.length} playlists sincronizadas${res.channel?.title ? ` de �${res.channel.title}�` : ''}`)
+    pushToast('info', `${res.items.length} playlists sincronizadas${res.channel?.title ? ` de «${res.channel.title}»` : ''}`)
   }
 
   const importTracks = async (p, mode) => {
@@ -178,19 +178,19 @@ function YtPlaylistsSection() {
     const res = await importPlaylist(`https://www.youtube.com/playlist?list=${p.id}`)
     setImporting('')
     if (!res?.ok || !res.items?.length) {
-      pushToast('error', res?.error ?? 'No se pudo leer la playlist (�URL privada sin sesi�n del navegador?).')
+      pushToast('error', res?.error ?? 'No se pudo leer la playlist («URL privada sin sesión del navegador»).')
       return
     }
     const tracks = res.items
     if (mode === 'queue') {
       appendToQueue(tracks)
-      pushToast('info', `${tracks.length} pistas en la cola desde �${p.title}�`)
+      pushToast('info', `${tracks.length} pistas en la cola desde «${p.title}«`)
     } else if (mode === 'likes') {
       likeMany(tracks)
       pushToast('info', `${tracks.length} pistas guardadas en Me gusta`)
     } else {
       playTrack(tracks[0], tracks)
-      pushToast('info', `Reproduciendo �${p.title}�`)
+      pushToast('info', `Reproduciendo «${p.title}»`)
     }
   }
 
@@ -205,7 +205,7 @@ function YtPlaylistsSection() {
           <div className="min-w-0">
             <h2 className="text-[17px] font-extrabold tracking-tight text-white">Mis playlists</h2>
             <p className="text-[11px] text-[#8ca0af]">
-              Guardadas en este equipo � {myPlaylists.length}
+              Guardadas en este equipo · {myPlaylists.length}
             </p>
           </div>
         </div>
@@ -237,8 +237,8 @@ function YtPlaylistsSection() {
         <div className="mt-4 flex flex-wrap items-center gap-4 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-5 py-5">
           <Youtube size={26} className="shrink-0 text-[#4a5560]" aria-hidden />
           <p className="min-w-0 flex-1 text-[12.5px] leading-snug text-[#8ca0af]">
-            Pega la URL de cualquier playlist (p�blica o privada, con la sesi�n de
-            tu navegador detectada) y aparecer� aqu� para siempre.
+            Pega la URL de cualquier playlist (pública o privada, con la sesión de
+            tu navegador detectada) y aparecerá aquí para siempre.
           </p>
           <button
             type="button"
@@ -275,12 +275,12 @@ function YtPlaylistsSection() {
                   </span>
                 </button>
 
-                {/* Quitar de la colecci�n (no toca YouTube) */}
+                {/* Quitar de la colección (no toca YouTube) */}
                 <button
                   type="button"
                   onClick={() => {
                     removePlaylist(p.id)
-                    pushToast('info', `�${p.title.slice(0, 48)}� eliminada de Mis playlists (YouTube no se toca).`)
+                    pushToast('info', `«${p.title.slice(0, 48)}» eliminada de Mis playlists (YouTube no se toca).`)
                   }}
                   aria-label={`Eliminar ${p.title} de Mis playlists`}
                   title="Eliminar de Mis playlists"
@@ -294,14 +294,14 @@ function YtPlaylistsSection() {
                     {p.title}
                   </p>
                   <div className="mt-1 flex items-center justify-between gap-2">
-                    <span className="text-[10.5px] tabular-nums text-[#8ca0af]">{p.itemCount} v�deos</span>
+                    <span className="text-[10.5px] tabular-nums text-[#8ca0af]">{p.itemCount} vídeos</span>
                     <span className="flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => importTracks(p, 'queue')}
                         disabled={busyKey}
-                        aria-label="A�adir playlist a la cola"
-                        title="A�adir a la cola"
+                        aria-label="Añadir playlist a la cola"
+                        title="Añadir a la cola"
                         className="rounded-md p-1.5 text-[#8ca0af] transition hover:bg-white/5 hover:text-[#15d3a2] disabled:opacity-40"
                       >
                         <ListPlus size={15} />

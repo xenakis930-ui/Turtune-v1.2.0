@@ -39,6 +39,19 @@ export default function App() {
       off.push(window.turtune.onTray('next', () => next(false)))
       off.push(window.turtune.onTray('previous', () => previous()))
     }
+    // Sincroniza estado de reproducción con el mini reproductor (gadget flotante)
+    if (window.turtune?.mini?.sendState) {
+      const syncMini = () => {
+        const s = usePlayerStore.getState()
+        window.turtune.mini.sendState({
+          current: s.current,
+          playbackState: s.playbackState,
+        })
+      }
+      syncMini()
+      const unsub = usePlayerStore.subscribe(syncMini)
+      off.push(() => { try { unsub() } catch { /* noop */ } })
+    }
     // Aviso único si la cola persistida se restauró
     const restored = usePlayerStore.getState().current
     if (restored) {

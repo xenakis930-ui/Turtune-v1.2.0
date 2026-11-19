@@ -1,4 +1,4 @@
-'use strict'
+﻿'use strict'
 
 /**
  * preload.js — Puente seguro contextBridge (sandbox + contextIsolation).
@@ -57,6 +57,14 @@ contextBridge.exposeInMainWorld('turtune', {
       ipcRenderer.on('update:status', listener)
       return () => ipcRenderer.removeListener('update:status', listener)
     },
+  },
+
+  mini: {
+    show: () => ipcRenderer.invoke('mini:show'),
+    hide: () => ipcRenderer.invoke('mini:hide'),
+    toggle: () => ipcRenderer.invoke('mini:toggle'),
+    isVisible: () => ipcRenderer.invoke('mini:isVisible'),
+    sendState: (state) => ipcRenderer.send('mini:state:update', state),
   },
 
   window: {

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turtune Mini</title>
+  <style>
+    :root {
+      --bg: #131a21;
+      --bg2: #1a2430;
+      --accent: #15d3a2;
+      --text: #e6f0f2;
+      --muted: #8ca0af;
+      --border: rgba(255,255,255,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      user-select: none;
+    }
+    .mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      padding: 8px 10px;
+      background: linear-gradient(180deg, #1a2430 0%, #131a21 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      -webkit-app-region: drag;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    .thumb {
+      width: 48px; height: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #0d1519;
+      display: grid; place-items: center;
+      border: 1px solid var(--border);
+    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb .placeholder { color: #3a4754; }
+    .info {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .title {
+      font-size: 13px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .artist {
+      font-size: 11px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .controls {
+      display: flex; align-items: center; gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+    button {
+      border: none; background: transparent; color: var(--text);
+      cursor: pointer; border-radius: 8px;
+      display: grid; place-items: center;
+      transition: transform .12s ease, background .12s ease, color .12s ease;
+      -webkit-app-region: no-drag;
+    }
+    button:hover { background: rgba(255,255,255,0.06); }
+    button:active { transform: scale(0.92); }
+    .play {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      color: #062a1d;
+      border-radius: 50%;
+    }
+    .play:hover { background: #4fe3b7; transform: scale(1.06); }
+    .icon-btn { width: 28px; height: 28px; color: var(--muted); }
+    .icon-btn:hover { color: var(--text); }
+    .close { color: var(--muted); }
+    .close:hover { color: #ff6b6b; }
+    .state {
+      font-size: 10px; color: var(--muted);
+      text-align: right; margin-top: 2px;
+    }
+    svg { width: 16px; height: 16px; }
+    .play svg { width: 18px; height: 18px; }
+  </style>
+</head>
+<body>
+  <div class="mini">
+    <div class="thumb" id="thumb">
+      <svg class="placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </div>
+    <div class="info">
+      <div class="title" id="title">Turtune</div>
+      <div class="artist" id="artist">Nada suena</div>
+    </div>
+    <div class="controls">
+      <button class="icon-btn" id="prev" title="Anterior" aria-label="Anterior">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg>
+      </button>
+      <button class="play" id="play" title="Reproducir/Pausar" aria-label="Reproducir o pausar">
+        <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="icon-btn" id="next" title="Siguiente" aria-label="Siguiente">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
+      </button>
+      <button class="icon-btn close" id="close" title="Cerrar mini reproductor" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const titleEl = document.getElementById('title');
+    const artistEl = document.getElementById('artist');
+    const thumbEl = document.getElementById('thumb');
+    const playBtn = document.getElementById('play');
+    const playIcon = document.getElementById('playIcon');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const closeBtn = document.getElementById('close');
+
+    const PLAY_SVG = '<path d="M8 5v14l11-7z"/>';
+    const PAUSE_SVG = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+
+    function setPlaying(isPlaying) {
+      playIcon.innerHTML = isPlaying ? PAUSE_SVG : PLAY_SVG;
+      playBtn.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproducir');
+    }
+
+    function updateState(state) {
+      if (!state) return;
+      const cur = state.current;
+      if (cur) {
+        titleEl.textContent = cur.title || 'Sin título';
+        artistEl.textContent = cur.artist || '';
+        if (cur.thumbnail) {
+          thumbEl.innerHTML = '<img alt="" src="' + String(cur.thumbnail).replace(/"/g, '&quot;') + '" />';
+        } else {
+          thumbEl.innerHTML = '<svg class="placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+        }
+      } else {
+        titleEl.textContent = 'Turtune';
+        artistEl.textContent = 'Nada suena';
+        thumbEl.innerHTML = '<svg class="placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+      }
+      const isPlaying = state.playbackState === 'playing';
+      setPlaying(isPlaying);
+    }
+
+    if (window.mini) {
+      window.mini.onState(updateState);
+    }
+
+    playBtn.addEventListener('click', () => { if (window.mini) window.mini.command('togglePlay'); });
+    prevBtn.addEventListener('click', () => { if (window.mini) window.mini.command('prev'); });
+    nextBtn.addEventListener('click', () => { if (window.mini) window.mini.command('next'); });
+    closeBtn.addEventListener('click', () => { if (window.mini) window.mini.command('close'); });
+  </script>
+</body>
+</html>
+EOF
