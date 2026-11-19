@@ -193,6 +193,18 @@ async function fetchRelatedAndContinue(track) {
     s().pushToast('error', 'No se pudo cargar la radio automática.')
   }
 }
+export function applySleepTimer(minutes) {
+  if (sleepTimerHandle) { clearTimeout(sleepTimerHandle); sleepTimerHandle = null }
+  if (!minutes || minutes <= 0) return
+  sleepTimerHandle = setTimeout(() => {
+    try { audio.pause() } catch { /* noop */ }
+    try { s().pushToast('info', 'Temporizador de sueÃ±o: reproducciÃ³n detenida.') } catch { /* noop */ }
+    usePlayerStore.setState({ playbackState: PLAYBACK.PAUSED, sleepTimer: null })
+    sleepTimerHandle = null
+  }, minutes * 60 * 1000)
+  sleepTimerHandle.unref?.()
+}
+
 function prefetchNext() {
   // Prefetch oportunista: la siguiente pista secuencial (ignora shuffle).
   try {

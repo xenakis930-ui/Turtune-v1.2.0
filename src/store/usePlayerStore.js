@@ -41,6 +41,7 @@ export const usePlayerStore = create(
       shuffle: false,
       repeat: 'off', // 'off' | 'all' | 'one'
       autoplay: true, // radio infinita: al terminar la cola, busca pistas relacionadas
+      sleepTimer: null, // minutos hasta detener (null = desactivado)
       queueOpen: false,
 
       setPlaybackState: (playbackState) => set({ playbackState }),
@@ -91,6 +92,7 @@ export const usePlayerStore = create(
       toggleMute: () => set((s) => ({ muted: !s.muted })),
       toggleShuffle: () => set((s) => ({ shuffle: !s.shuffle })),
       toggleAutoplay: () => set((s) => ({ autoplay: !s.autoplay })),
+      setSleepTimer: (minutes) => set({ sleepTimer: minutes }),
       cycleRepeat: () =>
         set((s) => ({ repeat: s.repeat === 'off' ? 'all' : s.repeat === 'all' ? 'one' : 'off' })),
       toggleQueue: () => set((s) => ({ queueOpen: !s.queueOpen })),

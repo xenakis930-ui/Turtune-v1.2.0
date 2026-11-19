@@ -15,7 +15,7 @@ import MobileNav from './components/MobileNav'
 import ExpandedPlayer from './components/ExpandedPlayer'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore, PLAYBACK } from './store/usePlayerStore'
-import { initEngine, togglePlay, next, previous } from './audio/engine'
+import { initEngine, togglePlay, next, previous, applySleepTimer } from './audio/engine'
 
 /**
  * Layout raíz estilo Spotify:
@@ -53,6 +53,11 @@ export default function App() {
       const unsub = usePlayerStore.subscribe(syncMini)
       off.push(() => { try { unsub() } catch { /* noop */ } })
     }
+    // Temporizador de sueÃ±o
+    applySleepTimer(usePlayerStore.getState().sleepTimer)
+    const unsubSleep = usePlayerStore.subscribe((state) => applySleepTimer(state.sleepTimer))
+    off.push(() => { try { unsubSleep() } catch { /* noop */ } })
+
     // Notificaciones de escritorio al cambiar de pista (solo si la ventana no tiene foco)
     let lastNotifiedId = null
     const unsubNotif = usePlayerStore.subscribe((state) => {

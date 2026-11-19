@@ -1,7 +1,7 @@
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart,
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
-  PictureInPicture2, Infinity as InfinityIcon,
+  PictureInPicture2, Infinity as InfinityIcon, Clock,
 } from '../lib/icons'
 import Thumb from './Thumb'
 import { useState } from 'react'
@@ -23,6 +23,8 @@ export default function PlayerBar() {
   const cycleRepeat = usePlayerStore((s) => s.cycleRepeat)
   const autoplay = usePlayerStore((s) => s.autoplay)
   const toggleAutoplay = usePlayerStore((s) => s.toggleAutoplay)
+  const sleepTimer = usePlayerStore((s) => s.sleepTimer)
+  const setSleepTimer = usePlayerStore((s) => s.setSleepTimer)
   const queueOpen = usePlayerStore((s) => s.queueOpen)
   const toggleQueue = usePlayerStore((s) => s.toggleQueue)
   const toggleHelp = usePlayerStore((s) => s.toggleHelp)
@@ -232,6 +234,19 @@ export default function PlayerBar() {
 
       {/* ---- Derecha: cola + volumen ---- */}
       <div className="flex items-center justify-end gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            const opts = [null, 15, 30, 45, 60]
+            const idx = opts.indexOf(sleepTimer)
+            setSleepTimer(opts[(idx + 1) % opts.length])
+          }}
+          aria-label={sleepTimer ? 'Temporizador: ' + sleepTimer + ' min' : 'Temporizador desactivado'}
+          title={sleepTimer ? 'Dormir en ' + sleepTimer + ' min' : 'Temporizador de sueÃ±o'}
+          className={'rounded-md p-2 transition ' + (sleepTimer ? 'text-[#15d3a2] bg-[#15d3a2]/10' : 'text-[#8ca0af] hover:bg-white/5 hover:text-white')}
+        >
+          <Clock size={19} />
+        </button>
         <button
           type="button"
           onClick={() => { try { window.turtune?.mini?.toggle?.() } catch { /* noop */ } }}
