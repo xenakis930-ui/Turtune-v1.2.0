@@ -19,7 +19,7 @@ export const usePlayerStore = create(
   persist(
     (set, get) => ({
       // ---------- Navegación ----------
-      view: 'home', // 'home' | 'search' | 'library'
+      view: 'home', // 'home' | 'search' | 'library' | 'discover' | 'settings'
       query: '',
       setView: (view) => set({ view }),
       setQuery: (query) => set(query.trim() ? { query, view: 'search' } : { query }),
@@ -40,6 +40,7 @@ export const usePlayerStore = create(
       muted: false,
       shuffle: false,
       repeat: 'off', // 'off' | 'all' | 'one'
+      autoplay: true, // radio infinita: al terminar la cola, busca pistas relacionadas
       queueOpen: false,
 
       setPlaybackState: (playbackState) => set({ playbackState }),
@@ -89,6 +90,7 @@ export const usePlayerStore = create(
       },
       toggleMute: () => set((s) => ({ muted: !s.muted })),
       toggleShuffle: () => set((s) => ({ shuffle: !s.shuffle })),
+      toggleAutoplay: () => set((s) => ({ autoplay: !s.autoplay })),
       cycleRepeat: () =>
         set((s) => ({ repeat: s.repeat === 'off' ? 'all' : s.repeat === 'all' ? 'one' : 'off' })),
       toggleQueue: () => set((s) => ({ queueOpen: !s.queueOpen })),

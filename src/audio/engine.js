@@ -12,7 +12,7 @@
  */
 
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
-import { getStreamUrl } from '../lib/api'
+import { getStreamUrl, searchBackend } from '../lib/api'
 import { initMediaSession } from './mediaSession'
 import { getBackendUrl } from '../lib/backend'
 
@@ -166,6 +166,33 @@ function setError(message) {
   s().pushToast('error', message)
 }
 
+async function fetchRelatedAndContinue(track) {
+  try {
+    usePlayerStore.setState({ playbackState: PLAYBACK.LOADING, buffering: true })
+    const query = track.artist ? `${track.artist}` : track.title
+    const res = await searchBackend(query)
+    const items = (res?.items ?? []).filter((t) => t?.id && t.id !== track.id)
+    if (items.length === 0) {
+      audio.pause()
+      s().stopAtEndOfQueue()
+      s().pushToast('info', 'No se encontraron pistas relacionadas.')
+      return
+    }
+    // Añadir las pistas relacionadas a la cola
+    const { queue } = s()
+    const newQueue = [...queue, ...items.slice(0, 8)]
+    const startIndex = queue.length
+    usePlayerStore.setState({ queue: newQueue })
+    s().setQueueIndex(startIndex)
+    const token = ++loadToken
+    loadAndPlay(newQueue[startIndex], token)
+    s().pushToast('info', `Radio: ${items.length} pistas relacionadas añadidas`)
+  } catch (err) {
+    audio.pause()
+    s().stopAtEndOfQueue()
+    s().pushToast('error', 'No se pudo cargar la radio automática.')
+  }
+}
 function prefetchNext() {
   // Prefetch oportunista: la siguiente pista secuencial (ignora shuffle).
   try {
@@ -308,6 +335,11 @@ export function next(_auto = false) {
     nextIndex = index + 1
   } else if (repeat === 'all') {
     nextIndex = 0
+  } else if (s().autoplay && s().current) {
+    // Radio infinita: busca pistas relacionadas y las añade a la cola
+    audio.pause()
+    fetchRelatedAndContinue(s().current)
+    return
   } else {
     audio.pause()
     s().stopAtEndOfQueue()

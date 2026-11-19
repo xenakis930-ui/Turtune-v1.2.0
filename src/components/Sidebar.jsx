@@ -1,4 +1,4 @@
-import { Home, Search, Library, Heart, ListMusic, Import, Settings } from '../lib/icons'
+import { Home, Search, Library, Heart, ListMusic, Import, Settings, Compass } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { getAppVersion } from '../lib/api'
 import { useEffect, useState } from 'react'
@@ -7,6 +7,7 @@ import turtuneLogo from '../assets/turtune.png'
 const NAV = [
   { id: 'home', label: 'Inicio', Icon: Home },
   { id: 'search', label: 'Buscar', Icon: Search },
+  { id: 'discover', label: 'Descubrir', Icon: Compass },
   { id: 'library', label: 'Tu biblioteca', Icon: Library },
   { id: 'settings', label: 'Ajustes', Icon: Settings },
 ]

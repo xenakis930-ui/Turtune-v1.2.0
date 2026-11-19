@@ -1,7 +1,7 @@
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Heart,
   Volume2, Volume1, VolumeX, ListMusic, Loader2, RotateCw, AudioLines, Keyboard,
-  PictureInPicture2,
+  PictureInPicture2, Infinity as InfinityIcon,
 } from '../lib/icons'
 import Thumb from './Thumb'
 import { useState } from 'react'
@@ -21,6 +21,8 @@ export default function PlayerBar() {
   const repeat = usePlayerStore((s) => s.repeat)
   const toggleShuffle = usePlayerStore((s) => s.toggleShuffle)
   const cycleRepeat = usePlayerStore((s) => s.cycleRepeat)
+  const autoplay = usePlayerStore((s) => s.autoplay)
+  const toggleAutoplay = usePlayerStore((s) => s.toggleAutoplay)
   const queueOpen = usePlayerStore((s) => s.queueOpen)
   const toggleQueue = usePlayerStore((s) => s.toggleQueue)
   const toggleHelp = usePlayerStore((s) => s.toggleHelp)
@@ -176,6 +178,18 @@ export default function PlayerBar() {
           >
             <RepeatIcon size={17} strokeWidth={2.2} />
             {repeat !== 'off' && <span className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[#15d3a2]" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleAutoplay}
+            aria-pressed={autoplay}
+            aria-label={autoplay ? 'Radio automática activada' : 'Radio automática desactivada'}
+            title={autoplay ? 'Radio automática: ON' : 'Radio automática: OFF'}
+            className={`relative transition hover:scale-110 hidden sm:inline-flex ${autoplay ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
+          >
+            <InfinityIcon size={17} strokeWidth={2.2} />
+            {autoplay && <span className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[#15d3a2]" />}
           </button>
         </div>
 

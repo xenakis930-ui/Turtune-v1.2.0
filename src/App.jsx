@@ -5,6 +5,7 @@ import HomeView from './components/HomeView'
 import SearchView from './components/SearchView'
 import LibraryView from './components/LibraryView'
 import SettingsView from './components/SettingsView'
+import DiscoverView from './components/DiscoverView'
 import PlayerBar from './components/PlayerBar'
 import QueuePanel from './components/QueuePanel'
 import ToastStack from './components/ToastStack'
@@ -52,6 +53,38 @@ export default function App() {
       const unsub = usePlayerStore.subscribe(syncMini)
       off.push(() => { try { unsub() } catch { /* noop */ } })
     }
+    // Notificaciones de escritorio al cambiar de pista (solo si la ventana no tiene foco)
+    let lastNotifiedId = null
+    const unsubNotif = usePlayerStore.subscribe((state) => {
+      const cur = state.current
+      if (!cur || cur.id === lastNotifiedId) return
+      if (state.playbackState !== PLAYBACK.PLAYING) return
+      if (typeof document !== 'undefined' && document.hasFocus()) return
+      lastNotifiedId = cur.id
+      try {
+        if ('Notification' in window) {
+          if (Notification.permission === 'granted') {
+            new Notification(cur.title || 'Turtune', {
+              body: cur.artist || '',
+              icon: cur.thumbnail || undefined,
+              tag: 'turtune-track',
+              silent: false,
+            })
+          } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then((p) => {
+              if (p === 'granted') {
+                new Notification(cur.title || 'Turtune', {
+                  body: cur.artist || '',
+                  icon: cur.thumbnail || undefined,
+                  tag: 'turtune-track',
+                })
+              }
+            }).catch(() => {})
+          }
+        }
+      } catch { /* noop */ }
+    })
+    off.push(() => { try { unsubNotif() } catch { /* noop */ } })
     // Aviso único si la cola persistida se restauró
     const restored = usePlayerStore.getState().current
     if (restored) {
@@ -74,6 +107,7 @@ export default function App() {
             {view === 'home' && <HomeView />}
             {view === 'search' && <SearchView />}
             {view === 'library' && <LibraryView />}
+            {view === 'discover' && <DiscoverView />}
             {view === 'settings' && <SettingsView />}
           </div>
         </main>
