@@ -44,7 +44,7 @@ export const usePlayerStore = create(
       sleepTimer: null, // minutos hasta detener (null = desactivado)
       eqEnabled: false,
       eqPreset: 'flat',
-      eqBands: { bass: 0, mid: 0, treble: 0 },
+      eqBands: [0, 0, 0, 0, 0, 0, 0],
       queueOpen: false,
 
       setPlaybackState: (playbackState) => set({ playbackState }),
@@ -98,7 +98,18 @@ export const usePlayerStore = create(
       setSleepTimer: (minutes) => set({ sleepTimer: minutes }),
       setEqEnabled: (on) => set({ eqEnabled: on }),
       setEqPreset: (name) => set({ eqPreset: name }),
-      setEqBands: (bands) => set((s) => ({ eqBands: { ...s.eqBands, ...bands } })) ,
+      setEqBands: (bands) => set((s) => {
+        if (Array.isArray(bands)) return { eqBands: bands.slice(0, 7) }
+        if (typeof bands === 'object' && bands !== null) {
+          // backward compat: { bass, mid, treble }
+          const arr = [...s.eqBands]
+          if (bands.bass !== undefined) arr[0] = bands.bass
+          if (bands.mid !== undefined) arr[3] = bands.mid
+          if (bands.treble !== undefined) arr[6] = bands.treble
+          return { eqBands: arr }
+        }
+        return {}
+      }),
       cycleRepeat: () =>
         set((s) => ({ repeat: s.repeat === 'off' ? 'all' : s.repeat === 'all' ? 'one' : 'off' })),
       toggleQueue: () => set((s) => ({ queueOpen: !s.queueOpen })),

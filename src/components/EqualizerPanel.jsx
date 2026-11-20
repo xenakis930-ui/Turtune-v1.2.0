@@ -1,12 +1,13 @@
 ﻿import { useState } from 'react'
-import { Sliders, Check } from '../lib/icons'
+import { Sliders } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
-import { EQ_PRESETS } from '../audio/equalizer'
+import { EQ_PRESETS, EQ_BAND_LABELS, EQ_BAND_FREQS, EQ_NUM_BANDS } from '../audio/equalizer'
 
-const PRESET_NAMES = ['flat', 'rock', 'pop', 'jazz', 'classical', 'bass', 'vocal', 'electronic']
+const PRESET_NAMES = ['flat', 'rock', 'pop', 'jazz', 'classical', 'bass', 'vocal', 'electronic', 'acoustic', 'loudness']
 const PRESET_LABELS = {
   flat: 'Plano', rock: 'Rock', pop: 'Pop', jazz: 'Jazz',
-  classical: 'ClÃ¡sica', bass: 'Bajos', vocal: 'Vocal', electronic: 'ElectrÃ³nica',
+  classical: 'Clásica', bass: 'Bajos', vocal: 'Vocal', electronic: 'Electrónica',
+  acoustic: 'Acústica', loudness: 'Loudness',
 }
 
 export default function EqualizerPanel() {
@@ -18,8 +19,10 @@ export default function EqualizerPanel() {
   const setEqPreset = usePlayerStore((s) => s.setEqPreset)
   const setEqBands = usePlayerStore((s) => s.setEqBands)
 
+  const bands = Array.isArray(eqBands) ? eqBands : [0, 0, 0, 0, 0, 0, 0]
+
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -52,13 +55,13 @@ export default function EqualizerPanel() {
           </div>
 
           {/* Presets */}
-          <div className="mb-3 flex flex-wrap gap-1.5">
+          <div className="mb-4 flex flex-wrap gap-1.5">
             {PRESET_NAMES.map((name) => (
               <button
                 key={name}
                 type="button"
                 onClick={() => { setEqPreset(name); setEqEnabled(true) }}
-                className={`rounded-full border px-3 py-1 text-[11px] font-bold transition ${
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-bold transition ${
                   eqPreset === name && eqEnabled
                     ? 'border-[#15d3a2] bg-[#15d3a2]/15 text-[#15d3a2]'
                     : 'border-white/10 text-[#8ca0af] hover:text-white'
@@ -69,30 +72,34 @@ export default function EqualizerPanel() {
             ))}
           </div>
 
-          {/* Sliders */}
-          {['bass', 'mid', 'treble'].map((band) => (
-            <div key={band} className="mb-2">
-              <div className="mb-1 flex items-center justify-between text-[11px]">
-                <span className="font-semibold text-[#8ca0af]">
-                  {band === 'bass' ? 'Bajos' : band === 'mid' ? 'Medios' : 'Agudos'}
-                </span>
-                <span className="tabular-nums text-[#15d3a2]">{eqBands[band]} dB</span>
+          {/* 7 bandas */}
+          <div className="flex items-end justify-between gap-1" style={{ height: 120 }}>
+            {bands.map((val, i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                <span className="text-[9px] tabular-nums text-[#15d3a2]">{val > 0 ? `+${val}` : val}</span>
+                <input
+                  type="range"
+                  min={-12}
+                  max={12}
+                  step={1}
+                  value={val}
+                  onChange={(e) => {
+                    const newBands = [...bands]
+                    newBands[i] = Number(e.target.value)
+                    setEqBands(newBands)
+                    setEqPreset('custom')
+                  }}
+                  className="eq-slider"
+                  style={{
+                    '--fill': `${((val + 12) / 24) * 100}%`,
+                    height: 80,
+                  }}
+                  orient="vertical"
+                />
+                <span className="text-[9px] font-semibold text-[#8ca0af]">{EQ_BAND_LABELS[i]}</span>
               </div>
-              <input
-                type="range"
-                min={-12}
-                max={12}
-                step={1}
-                value={eqBands[band]}
-                onChange={(e) => {
-                  setEqBands({ [band]: Number(e.target.value) })
-                  setEqPreset('custom')
-                }}
-                className="oct-range w-full"
-                style={{ '--fill': `${((eqBands[band] + 12) / 24) * 100}%` }}
-              />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -1,27 +1,37 @@
 ﻿/**
- * equalizer.js — Ecualizador de 3 bandas (bajos, medios, agudos) vía Web Audio API.
+ * equalizer.js — Ecualizador gráfico de 7 bandas vía Web Audio API.
+ * Frecuencias estándar: 60, 170, 310, 600, 1000, 3000, 6000 Hz.
  */
 let ctx = null
 let source = null
-let bass = null
-let mid = null
-let treble = null
+let filters = [] // array of BiquadFilterNode
 let gain = null
 let connected = false
 let enabled = false
 
+// 7 bandas estándar
+const BAND_FREQS = [60, 170, 310, 600, 1000, 3000, 6000]
+const BAND_LABELS = ['60', '170', '310', '600', '1k', '3k', '6k']
+const NUM_BANDS = BAND_FREQS.length
+
+// Presets (7 valores, uno por banda, en dB)
 const PRESETS = {
-  flat: { bass: 0, mid: 0, treble: 0 },
-  rock: { bass: 4, mid: -1, treble: 3 },
-  pop: { bass: 2, mid: 1, treble: 2 },
-  jazz: { bass: 2, mid: 0, treble: 2 },
-  classical: { bass: 0, mid: 0, treble: 2 },
-  bass: { bass: 6, mid: -2, treble: -1 },
-  vocal: { bass: -2, mid: 4, treble: 1 },
-  electronic: { bass: 3, mid: -1, treble: 3 },
+  flat:        [0, 0, 0, 0, 0, 0, 0],
+  rock:        [4, 3, -1, -2, 1, 3, 4],
+  pop:         [1, 2, 1, 0, 1, 2, 2],
+  jazz:        [3, 1, 0, 1, -1, 2, 3],
+  classical:   [3, 2, 0, 0, 0, 2, 3],
+  bass:        [6, 4, 1, -1, -2, -1, 0],
+  vocal:       [-2, -1, 0, 2, 4, 2, 0],
+  electronic:  [4, 2, 0, -1, 1, 3, 4],
+  acoustic:    [3, 2, 1, 0, 1, 2, 2],
+  loudness:    [4, 2, 0, 0, 0, 2, 4],
 }
 
 export const EQ_PRESETS = PRESETS
+export const EQ_BAND_FREQS = BAND_FREQS
+export const EQ_BAND_LABELS = BAND_LABELS
+export const EQ_NUM_BANDS = NUM_BANDS
 
 export function initEqualizer(audioEl) {
   if (connected || !audioEl) return
@@ -32,30 +42,32 @@ export function initEqualizer(audioEl) {
 
     source = ctx.createMediaElementSource(audioEl)
 
-    bass = ctx.createBiquadFilter()
-    bass.type = 'lowshelf'
-    bass.frequency.value = 200
-    bass.gain.value = 0
-
-    mid = ctx.createBiquadFilter()
-    mid.type = 'peaking'
-    mid.frequency.value = 1000
-    mid.Q.value = 1
-    mid.gain.value = 0
-
-    treble = ctx.createBiquadFilter()
-    treble.type = 'highshelf'
-    treble.frequency.value = 4000
-    treble.gain.value = 0
+    filters = BAND_FREQS.map((freq, i) => {
+      const f = ctx.createBiquadFilter()
+      if (i === 0) {
+        f.type = 'lowshelf'
+        f.frequency.value = freq
+      } else if (i === NUM_BANDS - 1) {
+        f.type = 'highshelf'
+        f.frequency.value = freq
+      } else {
+        f.type = 'peaking'
+        f.frequency.value = freq
+        f.Q.value = 1.4
+      }
+      f.gain.value = 0
+      return f
+    })
 
     gain = ctx.createGain()
     gain.gain.value = 1
 
-    // Cadena: source → bass → mid → treble → gain → destination
-    source.connect(bass)
-    bass.connect(mid)
-    mid.connect(treble)
-    treble.connect(gain)
+    // Cadena: source → f0 → f1 → ... → fN → gain → destination
+    source.connect(filters[0])
+    for (let i = 0; i < filters.length - 1; i++) {
+      filters[i].connect(filters[i + 1])
+    }
+    filters[filters.length - 1].connect(gain)
     gain.connect(ctx.destination)
 
     connected = true
@@ -64,7 +76,6 @@ export function initEqualizer(audioEl) {
   }
 }
 
-// Reanudar el AudioContext (necesario por politica de autoplay del navegador)
 export function resumeEqualizer() {
   if (ctx && ctx.state === 'suspended') {
     ctx.resume().catch(() => {})
@@ -74,30 +85,29 @@ export function resumeEqualizer() {
 export function setEqualizerEnabled(on) {
   enabled = !!on
   if (!connected) return
-  if (on) {
-    // Aplicar las bandas actuales
-  } else {
+  if (!on) {
     // Flat: todas las bandas a 0
-    bass.gain.value = 0
-    mid.gain.value = 0
-    treble.gain.value = 0
+    filters.forEach((f) => { f.gain.value = 0 })
   }
 }
 
-export function setEqualizerBands({ bass: b, mid: m, treble: t }) {
+export function setEqualizerBands(bands) {
   if (!connected) return
-  if (typeof b === 'number') bass.gain.value = enabled ? b : 0
-  if (typeof m === 'number') mid.gain.value = enabled ? m : 0
-  if (typeof t === 'number') treble.gain.value = enabled ? t : 0
+  if (!Array.isArray(bands)) return
+  bands.forEach((val, i) => {
+    if (filters[i] && typeof val === 'number') {
+      filters[i].gain.value = enabled ? val : 0
+    }
+  })
 }
 
 export function applyEqualizerPreset(name) {
   const p = PRESETS[name]
   if (!p) return
   if (enabled) {
-    bass.gain.value = p.bass
-    mid.gain.value = p.mid
-    treble.gain.value = p.treble
+    p.forEach((val, i) => {
+      if (filters[i]) filters[i].gain.value = val
+    })
   }
   return p
 }
@@ -105,9 +115,7 @@ export function applyEqualizerPreset(name) {
 export function getEqualizerState() {
   return {
     enabled,
-    bass: connected ? bass.gain.value : 0,
-    mid: connected ? mid.gain.value : 0,
-    treble: connected ? treble.gain.value : 0,
+    bands: connected ? filters.map((f) => f.gain.value) : new Array(NUM_BANDS).fill(0),
   }
 }
 
