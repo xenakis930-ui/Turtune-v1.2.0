@@ -1,7 +1,5 @@
 ﻿/**
- * equalizer.js â€” Ecualizador de 3 bandas (bajos, medios, agudos) vÃ­a Web Audio API.
- * Inserta un grafo de audio entre el <audio> y los altavoces.
- * Solo funciona en web/Electron (no en Android nativo, donde ExoPlayer maneja el audio).
+ * equalizer.js — Ecualizador de 3 bandas (bajos, medios, agudos) vía Web Audio API.
  */
 let ctx = null
 let source = null
@@ -53,7 +51,7 @@ export function initEqualizer(audioEl) {
     gain = ctx.createGain()
     gain.gain.value = 1
 
-    // Cadena: source â†’ bass â†’ mid â†’ treble â†’ gain â†’ destination
+    // Cadena: source → bass → mid → treble → gain → destination
     source.connect(bass)
     bass.connect(mid)
     mid.connect(treble)
@@ -66,45 +64,41 @@ export function initEqualizer(audioEl) {
   }
 }
 
+// Reanudar el AudioContext (necesario por politica de autoplay del navegador)
+export function resumeEqualizer() {
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {})
+  }
+}
+
 export function setEqualizerEnabled(on) {
   enabled = !!on
   if (!connected) return
-  if (enabled) {
-    // reconectar la cadena (ya estÃ¡ conectada, solo aseguramos)
+  if (on) {
+    // Aplicar las bandas actuales
   } else {
-    // bypass: desconectar filtros, conectar source directo a destination
-    try {
-      source.disconnect()
-      bass.disconnect()
-      mid.disconnect()
-      treble.disconnect()
-      gain.disconnect()
-      source.connect(ctx.destination)
-    } catch { /* noop */ }
-  }
-  if (enabled && connected) {
-    try {
-      source.disconnect()
-      source.connect(bass)
-      bass.connect(mid)
-      mid.connect(treble)
-      treble.connect(gain)
-      gain.connect(ctx.destination)
-    } catch { /* noop */ }
+    // Flat: todas las bandas a 0
+    bass.gain.value = 0
+    mid.gain.value = 0
+    treble.gain.value = 0
   }
 }
 
 export function setEqualizerBands({ bass: b, mid: m, treble: t }) {
   if (!connected) return
-  if (typeof b === 'number') bass.gain.value = b
-  if (typeof m === 'number') mid.gain.value = m
-  if (typeof t === 'number') treble.gain.value = t
+  if (typeof b === 'number') bass.gain.value = enabled ? b : 0
+  if (typeof m === 'number') mid.gain.value = enabled ? m : 0
+  if (typeof t === 'number') treble.gain.value = enabled ? t : 0
 }
 
 export function applyEqualizerPreset(name) {
   const p = PRESETS[name]
   if (!p) return
-  setEqualizerBands(p)
+  if (enabled) {
+    bass.gain.value = p.bass
+    mid.gain.value = p.mid
+    treble.gain.value = p.treble
+  }
   return p
 }
 

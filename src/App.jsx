@@ -16,7 +16,7 @@ import ExpandedPlayer from './components/ExpandedPlayer'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore, PLAYBACK } from './store/usePlayerStore'
 import { initEngine, togglePlay, next, previous, applySleepTimer } from './audio/engine'
-import { setEqualizerEnabled, setEqualizerBands, applyEqualizerPreset } from './audio/equalizer'
+import { setEqualizerEnabled, setEqualizerBands, applyEqualizerPreset, resumeEqualizer } from './audio/equalizer'
 
 /**
  * Layout raíz estilo Spotify:
@@ -56,6 +56,7 @@ export default function App() {
     }
     // Ecualizador: aplicar cambios
     const applyEq = () => {
+      resumeEqualizer()
       const st = usePlayerStore.getState()
       setEqualizerEnabled(st.eqEnabled)
       if (st.eqPreset && st.eqPreset !== 'custom') applyEqualizerPreset(st.eqPreset)
@@ -73,6 +74,12 @@ export default function App() {
     applySleepTimer(usePlayerStore.getState().sleepTimer)
     const unsubSleep = usePlayerStore.subscribe((state) => applySleepTimer(state.sleepTimer))
     off.push(() => { try { unsubSleep() } catch { /* noop */ } })
+
+    // Reanudar AudioContext al reproducir (politica de autoplay)
+    const unsubResume = usePlayerStore.subscribe((state) => {
+      if (state.playbackState === PLAYBACK.PLAYING) resumeEqualizer()
+    })
+    off.push(() => { try { unsubResume() } catch { /* noop */ } })
 
     // Notificaciones de escritorio al cambiar de pista (solo si la ventana no tiene foco)
     let lastNotifiedId = null
