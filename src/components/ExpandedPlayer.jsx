@@ -39,6 +39,7 @@ export default function ExpandedPlayer() {
       aria-modal="true"
       aria-label="Reproductor expandido"
       className="fixed inset-0 z-[60] flex flex-col bg-[#0a0f14]/95 backdrop-blur-xl expanded-player-enter"
+      onClick={() => console.warn('[EXPANDED] container clicked')}
     >
       {/* Cabecera */}
       <div className="flex items-center justify-between px-6 pt-6">
@@ -171,18 +172,18 @@ export default function ExpandedPlayer() {
         </div>
 
         {/* Columna derecha: letras + ecualizador (desktop) */}
-        <div className="flex w-full flex-col items-center gap-4 px-6 pb-6 lg:w-[420px] lg:items-stretch lg:px-0 lg:pb-0">
+        <div className="flex w-full flex-col items-center gap-4 overflow-y-auto px-6 pb-6 lg:w-[420px] lg:items-stretch lg:px-0 lg:pb-0">
+          {/* Ecualizador */}
+          <div className="w-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <EqualizerPanel />
+          </div>
+
           {/* Letras sincronizadas */}
           <div className="w-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
             <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#8ca0af]">
               Letras
             </p>
             <LyricsPanel track={current} currentTime={currentTime} />
-          </div>
-
-          {/* Ecualizador */}
-          <div className="w-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
-            <EqualizerPanel />
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { getStreamUrl, searchBackend } from '../lib/api'
 import { initMediaSession } from './mediaSession'
-import { initEqualizer, setEqualizerEnabled, setEqualizerBands, applyEqualizerPreset } from './equalizer'
+import { initEqualizer, setEqualizerEnabled, setEqualizerBands, applyEqualizerPreset, isEqualizerConnected } from './equalizer'
 import { getBackendUrl } from '../lib/backend'
 
 const audio = new Audio()
@@ -116,7 +116,7 @@ export function initEngine() {
 
   // Teclas multimedia + metadatos del sistema (Media Session API) — solo en web/Electron
   // (en Android lo gestiona el servicio nativo TurtuneAudioService).
-  if (!isNative()) { initEqualizer(audio); initMediaSession({ togglePlay, next, previous, seekTo }) }
+  if (!isNative()) { console.warn('[ENGINE] initEqualizer calling'); initEqualizer(audio); console.warn('[ENGINE] initEqualizer done, connected:', isEqualizerConnected()); initMediaSession({ togglePlay, next, previous, seekTo }) }
 }
 
 function clamp01(v) {
