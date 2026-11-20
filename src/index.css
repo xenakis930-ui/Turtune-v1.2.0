@@ -1242,3 +1242,45 @@ button:disabled {
 .rounded-softest {
   border-radius: var(--radius-xl);
 }
+
+
+/* ---------- Ecualizador vertical (7 bandas) ---------- */
+.eq-slider {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  width: 8px;
+  writing-mode: bt-lr;
+  direction: rtl;
+  background: linear-gradient(
+    to top,
+    #15d3a2 0 var(--fill, 50%),
+    #3a4754 var(--fill, 50%) 100%
+  );
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.eq-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #15d3a2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+.eq-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #15d3a2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+.eq-slider:focus-visible {
+  outline: 2px solid #15d3a2;
+  outline-offset: 2px;
+}
