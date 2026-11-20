@@ -79,7 +79,7 @@ export default function LyricsPanel({ track, currentTime }) {
   return (
     <div
       ref={containerRef}
-      className="max-h-64 overflow-y-auto px-2 py-4 text-center"
+      className="max-h-40 overflow-y-auto px-2 py-4 text-center"
     >
       {lines.map((l, i) => (
         <p

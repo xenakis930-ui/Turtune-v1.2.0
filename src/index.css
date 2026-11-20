@@ -1246,10 +1246,10 @@ button:disabled {
 
 /* ---------- Ecualizador vertical (7 bandas) ---------- */
 .eq-slider {
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
+  -webkit-appearance: none;
+  appearance: none;
   width: 8px;
-  writing-mode: bt-lr;
+  writing-mode: vertical-lr;
   direction: rtl;
   background: linear-gradient(
     to top,
