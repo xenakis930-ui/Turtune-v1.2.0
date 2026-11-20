@@ -11,7 +11,7 @@ const PRESET_LABELS = {
 }
 
 export default function EqualizerPanel() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const eqEnabled = usePlayerStore((s) => s.eqEnabled)
   const eqPreset = usePlayerStore((s) => s.eqPreset)
   const eqBands = usePlayerStore((s) => s.eqBands)
@@ -73,7 +73,7 @@ export default function EqualizerPanel() {
           </div>
 
           {/* 7 bandas */}
-          <div className="flex items-end justify-between gap-1" style={{ height: 120 }}>
+          <div className="flex items-end justify-between gap-2" style={{ height: 140 }}>
             {bands.map((val, i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1">
                 <span className="text-[9px] tabular-nums text-[#15d3a2]">{val > 0 ? `+${val}` : val}</span>
@@ -92,7 +92,7 @@ export default function EqualizerPanel() {
                   className="eq-slider"
                   style={{
                     '--fill': `${((val + 12) / 24) * 100}%`,
-                    height: 80,
+                    height: 100,
                   }}
                   orient="vertical"
                 />
