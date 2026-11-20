@@ -1,4 +1,4 @@
-import { X, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, ListMusic, Volume2, Volume1, VolumeX } from '../lib/icons'
+﻿import { X, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, ListMusic, Volume2, Volume1, VolumeX } from '../lib/icons'
 import Thumb from './Thumb'
 import LyricsPanel from './LyricsPanel'
 import EqualizerPanel from './EqualizerPanel'
@@ -6,7 +6,7 @@ import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'
 import { formatTime } from '../lib/format'
 
-/** Vista expandida del reproductor — modal full-screen con carátula gigante. */
+/** Vista expandida del reproductor â€” modal full-screen con carÃ¡tula gigante. */
 export default function ExpandedPlayer() {
   const open = usePlayerStore((s) => s.expandedPlayer)
   const setExpandedPlayer = usePlayerStore((s) => s.setExpandedPlayer)
@@ -38,7 +38,7 @@ export default function ExpandedPlayer() {
       role="dialog"
       aria-modal="true"
       aria-label="Reproductor expandido"
-      className="fixed inset-0 z-[60] flex flex-col bg-[#0a0f14]/95 backdrop-blur-xl"
+      className="fixed inset-0 z-[60] flex flex-col bg-[#0a0f14]/95 backdrop-blur-xl expanded-player-enter"
     >
       {/* Cabecera */}
       <div className="flex items-center justify-between px-6 pt-6">
@@ -56,138 +56,149 @@ export default function ExpandedPlayer() {
         <div className="w-10" aria-hidden />
       </div>
 
-      {/* Carátula + info */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-4">
-        <Thumb
-          src={current.thumbnail}
-          alt={`Carátula de ${current.title}`}
-          className="h-64 w-64 rounded-2xl shadow-card sm:h-80 sm:w-80"
-          iconSize={80}
-        />
-        <div className="w-full max-w-md text-center">
-          <h2 className="line-clamp-2 text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl">
-            {current.title}
-          </h2>
-          <p className="mt-2 text-[14px] font-semibold text-[#8ca0af]">{current.artist}</p>
-        </div>
-
-        {/* Seekbar */}
-        <div className="flex w-full max-w-md items-center gap-3 text-[12px] tabular-nums text-[#8ca0af]">
-          <span className="w-10 text-right">{formatTime(currentTime)}</span>
-          <input
-            type="range"
-            min={0}
-            max={Math.max(1, Math.floor(effectiveDuration))}
-            step={1}
-            value={Math.min(currentTime, effectiveDuration || currentTime)}
-            onChange={(e) => seekTo(Number(e.target.value))}
-            aria-label="Buscar en la canción"
-            className="oct-range flex-1"
-            style={{ '--fill': `${pct}%`, '--buffer': `${pct}%` }}
-            disabled={!current}
+      {/* Contenido principal: 2 columnas en desktop */}
+      <div className="flex flex-1 flex-col overflow-hidden lg:flex-row lg:items-center lg:justify-center lg:gap-12 lg:px-12">
+        {/* Columna izquierda: carÃ¡tula + info + controles */}
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-4">
+          <Thumb
+            src={current.thumbnail}
+            alt={`CarÃ¡tula de ${current.title}`}
+            className="h-56 w-56 rounded-2xl shadow-card sm:h-72 sm:w-72"
+            iconSize={72}
           />
-          <span className="w-10">{effectiveDuration > 0 ? formatTime(effectiveDuration) : '–:–'}</span>
+          <div className="w-full max-w-md text-center">
+            <h2 className="line-clamp-2 text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl">
+              {current.title}
+            </h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#8ca0af]">{current.artist}</p>
+          </div>
+
+          {/* Seekbar */}
+          <div className="flex w-full max-w-md items-center gap-3 text-[12px] tabular-nums text-[#8ca0af]">
+            <span className="w-10 text-right">{formatTime(currentTime)}</span>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(1, Math.floor(effectiveDuration))}
+              step={1}
+              value={Math.min(currentTime, effectiveDuration || currentTime)}
+              onChange={(e) => seekTo(Number(e.target.value))}
+              aria-label="Buscar en la canciÃ³n"
+              className="oct-range flex-1"
+              style={{ '--fill': `${pct}%`, '--buffer': `${pct}%` }}
+              disabled={!current}
+            />
+            <span className="w-10">{effectiveDuration > 0 ? formatTime(effectiveDuration) : 'â€“:â€“'}</span>
+          </div>
+
+          {/* Controles */}
+          <div className="flex items-center gap-6">
+            <button
+              type="button"
+              onClick={toggleShuffle}
+              aria-pressed={shuffle}
+              aria-label="Aleatorio"
+              className={`transition hover:scale-110 ${shuffle ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
+            >
+              <Shuffle size={20} strokeWidth={2.2} />
+            </button>
+            <button
+              type="button"
+              onClick={previous}
+              disabled={!current}
+              aria-label="Anterior"
+              className="text-[#8ca0af] transition hover:scale-110 hover:text-white disabled:opacity-30"
+            >
+              <SkipBack size={26} fill="currentColor" />
+            </button>
+            <button
+              type="button"
+              onClick={togglePlay}
+              disabled={!current}
+              aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+              className="grid h-16 w-16 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:opacity-30"
+            >
+              {isLoading ? (
+                <Loader2 size={28} className="animate-spin" aria-hidden />
+              ) : isPlaying ? (
+                <Pause size={28} fill="currentColor" aria-hidden />
+              ) : (
+                <Play size={28} fill="currentColor" className="ml-1" aria-hidden />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => next(false)}
+              disabled={!current}
+              aria-label="Siguiente"
+              className="text-[#8ca0af] transition hover:scale-110 hover:text-white disabled:opacity-30"
+            >
+              <SkipForward size={26} fill="currentColor" />
+            </button>
+            <button
+              type="button"
+              onClick={cycleRepeat}
+              aria-pressed={repeat !== 'off'}
+              aria-label={repeat === 'one' ? 'Repetir una' : repeat === 'all' ? 'Repetir todo' : 'Repetir'}
+              className={`transition hover:scale-110 ${repeat !== 'off' ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
+            >
+              <RepeatIcon size={20} strokeWidth={2.2} />
+            </button>
+          </div>
+
+          {/* Volumen */}
+          <div className="flex w-full max-w-xs items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+              className="text-[#8ca0af] transition hover:text-white"
+            >
+              <VolumeIcon size={20} />
+            </button>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={muted ? 0 : Math.round(volume * 100)}
+              onChange={(e) => setVolume(Number(e.target.value) / 100)}
+              aria-label="Volumen"
+              className="oct-range flex-1"
+              style={{ '--fill': `${muted ? 0 : Math.round(volume * 100)}%` }}
+            />
+          </div>
         </div>
 
-        {/* Controles */}
-        <div className="flex items-center gap-6">
-          <button
-            type="button"
-            onClick={toggleShuffle}
-            aria-pressed={shuffle}
-            aria-label="Aleatorio"
-            className={`transition hover:scale-110 ${shuffle ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
-          >
-            <Shuffle size={20} strokeWidth={2.2} />
-          </button>
-          <button
-            type="button"
-            onClick={previous}
-            disabled={!current}
-            aria-label="Anterior"
-            className="text-[#8ca0af] transition hover:scale-110 hover:text-white disabled:opacity-30"
-          >
-            <SkipBack size={26} fill="currentColor" />
-          </button>
-          <button
-            type="button"
-            onClick={togglePlay}
-            disabled={!current}
-            aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
-            className="grid h-16 w-16 place-items-center rounded-full bg-white text-black transition hover:scale-105 hover:bg-[#f0f0f0] disabled:opacity-30"
-          >
-            {isLoading ? (
-              <Loader2 size={28} className="animate-spin" aria-hidden />
-            ) : isPlaying ? (
-              <Pause size={28} fill="currentColor" aria-hidden />
-            ) : (
-              <Play size={28} fill="currentColor" className="ml-1" aria-hidden />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => next(false)}
-            disabled={!current}
-            aria-label="Siguiente"
-            className="text-[#8ca0af] transition hover:scale-110 hover:text-white disabled:opacity-30"
-          >
-            <SkipForward size={26} fill="currentColor" />
-          </button>
-          <button
-            type="button"
-            onClick={cycleRepeat}
-            aria-pressed={repeat !== 'off'}
-            aria-label={repeat === 'one' ? 'Repetir una' : repeat === 'all' ? 'Repetir todo' : 'Repetir'}
-            className={`transition hover:scale-110 ${repeat !== 'off' ? 'text-[#15d3a2]' : 'text-[#8ca0af] hover:text-white'}`}
-          >
-            <RepeatIcon size={20} strokeWidth={2.2} />
-          </button>
+        {/* Columna derecha: letras + ecualizador (desktop) */}
+        <div className="flex w-full flex-col items-center gap-4 px-6 pb-6 lg:w-[420px] lg:items-stretch lg:px-0 lg:pb-0">
+          {/* Letras sincronizadas */}
+          <div className="w-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#8ca0af]">
+              Letras
+            </p>
+            <LyricsPanel track={current} currentTime={currentTime} />
+          </div>
+
+          {/* Ecualizador */}
+          <div className="w-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <EqualizerPanel />
+          </div>
         </div>
-
-        {/* Volumen */}
-        <div className="flex w-full max-w-xs items-center gap-3">
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={muted ? 'Activar sonido' : 'Silenciar'}
-            className="text-[#8ca0af] transition hover:text-white"
-          >
-            <VolumeIcon size={20} />
-          </button>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={muted ? 0 : Math.round(volume * 100)}
-            onChange={(e) => setVolume(Number(e.target.value) / 100)}
-            aria-label="Volumen"
-            className="oct-range flex-1"
-            style={{ '--fill': `${muted ? 0 : Math.round(volume * 100)}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Ecualizador */}
-      <EqualizerPanel />
-
-      {/* Letras sincronizadas */}
-      <div className="w-full max-w-md">
-        <LyricsPanel track={current} currentTime={currentTime} />
       </div>
 
       {/* Cola (compacta) */}
       {queue.length > 1 && (
         <div className="border-t border-white/5 px-6 py-4">
           <p className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#8ca0af]">
-            <ListMusic size={14} /> A continuación
+            <ListMusic size={14} /> A continuaciÃ³n
           </p>
           <div className="scroll-area flex gap-3 overflow-x-auto pb-1">
             {queue.slice(index + 1, index + 6).map((t, i) => (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => { setExpandedPlayer(false); /* playQueueIndex would be called but we close first */ }}
+                onClick={() => { setExpandedPlayer(false) }}
                 className="w-32 shrink-0 overflow-hidden rounded-lg bg-white/[0.04] text-left transition hover:bg-white/[0.08]"
               >
                 <Thumb src={t.thumbnail} alt="" className="aspect-square w-full" iconSize={24} />
