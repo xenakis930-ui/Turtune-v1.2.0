@@ -4,6 +4,7 @@ import {
   PictureInPicture2, Infinity as InfinityIcon, Clock, Sliders,
 } from '../lib/icons'
 import Thumb from './Thumb'
+import EqualizerPopover from './EqualizerPopover'
 import { useState } from 'react'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'
@@ -247,15 +248,7 @@ export default function PlayerBar() {
         >
           <Clock size={19} />
         </button>
-        <button
-          type="button"
-          onClick={toggleExpandedPlayer}
-          aria-label="Ecualizador y letras"
-          title="Ecualizador y letras (reproductor expandido)"
-          className="rounded-md p-2 text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
-        >
-          <Sliders size={19} />
-        </button>
+        <EqualizerPopover />
         <button
           type="button"
           onClick={() => { try { window.turtune?.mini?.toggle?.() } catch { /* noop */ } }}

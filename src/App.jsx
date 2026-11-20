@@ -56,6 +56,7 @@ export default function App() {
     }
     // Ecualizador: aplicar cambios
     const applyEq = () => {
+      console.warn('[APP] applyEq called')
       resumeEqualizer()
       const st = usePlayerStore.getState()
       setEqualizerEnabled(st.eqEnabled)
@@ -64,6 +65,7 @@ export default function App() {
     }
     applyEq()
     const unsubEq = usePlayerStore.subscribe((state) => {
+      console.warn('[APP] EQ subscription fired, eqEnabled:', state.eqEnabled, 'preset:', state.eqPreset)
       setEqualizerEnabled(state.eqEnabled)
       if (state.eqPreset && state.eqPreset !== 'custom') applyEqualizerPreset(state.eqPreset)
       else setEqualizerBands(state.eqBands)
