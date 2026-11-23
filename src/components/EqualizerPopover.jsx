@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef } from 'react'
 import { Sliders, X } from '../lib/icons'
 import { usePlayerStore } from '../store/usePlayerStore'
 import { EQ_PRESETS, EQ_BAND_LABELS } from '../audio/equalizer'
@@ -21,16 +21,6 @@ export default function EqualizerPopover() {
   const setEqBands = usePlayerStore((s) => s.setEqBands)
 
   const bands = Array.isArray(eqBands) ? eqBands : [0, 0, 0, 0, 0, 0, 0]
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
 
   return (
     <div className="relative" ref={ref}>
@@ -66,7 +56,7 @@ export default function EqualizerPopover() {
             <span className="text-[12px] font-semibold text-white">Activar EQ</span>
             <button
               type="button"
-              onClick={() => setEqEnabled(!eqEnabled)}
+              onClick={() => { console.warn('[POPOVER] toggle clicked, current:', eqEnabled); setEqEnabled(!eqEnabled) }}
               className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-0 p-0 transition-colors"
               style={{ backgroundColor: eqEnabled ? '#15d3a2' : 'rgba(255,255,255,0.1)' }}
               aria-pressed={eqEnabled}
@@ -88,7 +78,7 @@ export default function EqualizerPopover() {
               <button
                 key={name}
                 type="button"
-                onClick={() => { setEqPreset(name); setEqEnabled(true) }}
+                onClick={() => { console.warn('[POPOVER] preset clicked:', name); setEqPreset(name); setEqEnabled(true) }}
                 className={`rounded-full border px-2.5 py-1 text-[10px] font-bold transition cursor-pointer ${
                   eqPreset === name && eqEnabled
                     ? 'border-[#15d3a2] bg-[#15d3a2]/15 text-[#15d3a2]'
