@@ -4,7 +4,7 @@ import {
   PictureInPicture2, Infinity as InfinityIcon, Clock, Sliders,
 } from '../lib/icons'
 import Thumb from './Thumb'
-import EqualizerPopover from './EqualizerPopover'
+import EqualizerModal from './EqualizerModal'
 import { useState } from 'react'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
 import { togglePlay, next, previous, seekTo, setVolume, toggleMute } from '../audio/engine'
@@ -248,7 +248,7 @@ export default function PlayerBar() {
         >
           <Clock size={19} />
         </button>
-        <EqualizerPopover />
+        <EqualizerModal />
         <button
           type="button"
           onClick={() => { try { window.turtune?.mini?.toggle?.() } catch { /* noop */ } }}
