@@ -97,7 +97,17 @@ export const usePlayerStore = create(
       toggleAutoplay: () => set((s) => ({ autoplay: !s.autoplay })),
       setSleepTimer: (minutes) => set({ sleepTimer: minutes }),
       setEqEnabled: (on) => set({ eqEnabled: on }),
-      setEqPreset: (name) => set({ eqPreset: name }),
+      setEqPreset: (name) => set((s) => {
+        const PRESETS = {
+          flat: [0,0,0,0,0,0,0], rock: [4,3,-1,-2,1,3,4], pop: [1,2,1,0,1,2,2],
+          jazz: [3,1,0,1,-1,2,3], classical: [3,2,0,0,0,2,3], bass: [6,4,1,-1,-2,-1,0],
+          vocal: [-2,-1,0,2,4,2,0], electronic: [4,2,0,-1,1,3,4],
+          acoustic: [3,2,1,0,1,2,2], loudness: [4,2,0,0,0,2,4],
+        }
+        const bands = PRESETS[name]
+        if (bands) return { eqPreset: name, eqBands: bands.slice() }
+        return { eqPreset: name }
+      }),
       setEqBands: (bands) => set((s) => {
         if (Array.isArray(bands)) return { eqBands: bands.slice(0, 7) }
         if (typeof bands === 'object' && bands !== null) {
