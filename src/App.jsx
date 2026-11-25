@@ -13,6 +13,7 @@ import ShortcutsOverlay from './components/ShortcutsOverlay'
 import ImportPlaylistModal from './components/ImportPlaylistModal'
 import MobileNav from './components/MobileNav'
 import ExpandedPlayer from './components/ExpandedPlayer'
+import CreatePlaylistModal from './components/CreatePlaylistModal'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { usePlayerStore, PLAYBACK } from './store/usePlayerStore'
 import { initEngine, togglePlay, next, previous, applySleepTimer } from './audio/engine'
@@ -63,13 +64,13 @@ export default function App() {
       else setEqualizerBands(st.eqBands)
     }
     applyEq()
-    const unsubEq = usePlayerStore.subscribe((state) => {
-      console.warn('[APP] EQ subscription fired, eqEnabled:', state.eqEnabled, 'preset:', state.eqPreset)
-      setEqualizerEnabled(state.eqEnabled)
-      if (state.eqPreset && state.eqPreset !== 'custom') applyEqualizerPreset(state.eqPreset)
-      else setEqualizerBands(state.eqBands)
-    })
-    off.push(() => { try { unsubEq() } catch { /* noop */ } })
+//     const unsubEq = usePlayerStore.subscribe((state) => {
+// 
+//       setEqualizerEnabled(state.eqEnabled)
+//       if (state.eqPreset && state.eqPreset !== 'custom') applyEqualizerPreset(state.eqPreset)
+//       else setEqualizerBands(state.eqBands)
+//     })
+//     off.push(() => { try { unsubEq() } catch { /* noop */ } })
 
     // Temporizador de sueÃ±o
     applySleepTimer(usePlayerStore.getState().sleepTimer)

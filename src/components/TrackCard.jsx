@@ -1,7 +1,8 @@
-import { Play, Pause, Loader2, Heart, ListPlus } from '../lib/icons'
+import { Play, Pause, Loader2, Heart, ListPlus, Plus } from '../lib/icons'
 import Thumb from './Thumb'
 import { formatDuration } from '../lib/format'
 import { usePlayerStore, PLAYBACK } from '../store/usePlayerStore'
+import { useState, useMemo } from 'react'
 import { playTrack, togglePlay } from '../audio/engine'
 
 /** Puntos ecualizador animado cuando la pista está sonando. */
@@ -25,6 +26,11 @@ export default function TrackCard({ track, context }) {
   const liked = usePlayerStore((s) => s.liked)
   const toggleLike = usePlayerStore((s) => s.toggleLike)
   const addToQueue = usePlayerStore((s) => s.addToQueue)
+  const myPlaylists = usePlayerStore((s) => s.myPlaylists)
+  const localPlaylists = useMemo(() => myPlaylists.filter((p) => p.isLocal), [myPlaylists])
+  const addTrackToPlaylist = usePlayerStore((s) => s.addTrackToPlaylist)
+  const pushToast = usePlayerStore((s) => s.pushToast)
+  const [showPlaylists, setShowPlaylists] = useState(false)
 
   const isCurrent = current?.id === track.id
   const isPlaying = isCurrent && playbackState === PLAYBACK.PLAYING
@@ -70,6 +76,37 @@ export default function TrackCard({ track, context }) {
             >
               <ListPlus size={16} />
             </button>
+            {localPlaylists.length > 0 && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowPlaylists((v) => !v)}
+                  aria-label="AÃ±adir a playlist"
+                  title="AÃ±adir a playlist"
+                  className="rounded-full bg-black/55 p-1.5 text-white/85 backdrop-blur-sm transition hover:scale-110 hover:text-white"
+                >
+                  <Plus size={16} />
+                </button>
+                {showPlaylists && (
+                  <div className="absolute bottom-full left-0 mb-1 w-48 rounded-lg border border-white/10 bg-[#141f22] p-1 shadow-xl z-50">
+                    {localPlaylists.map((pl) => (
+                      <button
+                        key={pl.id}
+                        type="button"
+                        onClick={() => {
+                          addTrackToPlaylist(pl.id, track)
+                          setShowPlaylists(false)
+                          pushToast('success', 'AÃ±adido a ' + pl.title)
+                        }}
+                        className="block w-full rounded-md px-3 py-1.5 text-left text-[11px] font-semibold text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
+                      >
+                        {pl.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <button
             type="button"

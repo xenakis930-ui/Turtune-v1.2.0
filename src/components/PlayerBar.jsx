@@ -248,7 +248,7 @@ export default function PlayerBar() {
         >
           <Clock size={19} />
         </button>
-        <EqualizerModal />
+        {/* <EqualizerModal /> */}
         <button
           type="button"
           onClick={() => { try { window.turtune?.mini?.toggle?.() } catch { /* noop */ } }}

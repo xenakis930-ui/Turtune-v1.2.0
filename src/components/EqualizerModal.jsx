@@ -84,7 +84,8 @@ export default function EqualizerModal() {
                 <button
                   key={name}
                   type="button"
-                  onClick={() => { console.warn('[MODAL] preset clicked:', name); setEqPreset(name); setEqEnabled(true) }}
+                  onClick={() => {
+; setEqPreset(name); setEqEnabled(true) }}
                   className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition cursor-pointer ${
                     eqPreset === name && eqEnabled
                       ? 'border-[#15d3a2] bg-[#15d3a2]/15 text-[#15d3a2]'

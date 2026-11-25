@@ -72,7 +72,7 @@ export function initEqualizer(audioEl) {
 
     connected = true
   } catch (err) {
-    console.warn('[turtune:eq] no se pudo inicializar el ecualizador:', err?.message ?? err)
+
   }
 }
 
@@ -83,7 +83,7 @@ export function resumeEqualizer() {
 }
 
 export function setEqualizerEnabled(on) {
-  console.warn('[EQ] setEnabled:', on, 'connected:', connected)
+
   enabled = !!on
   if (!connected) return
   if (!on) {
@@ -93,7 +93,7 @@ export function setEqualizerEnabled(on) {
 }
 
 export function setEqualizerBands(bands) {
-  console.warn('[EQ] setBands:', bands, 'enabled:', enabled)
+
   if (!connected) return
   if (!Array.isArray(bands)) return
   bands.forEach((val, i) => {
@@ -104,7 +104,7 @@ export function setEqualizerBands(bands) {
 }
 
 export function applyEqualizerPreset(name) {
-  console.warn('[EQ] applyPreset:', name, 'enabled:', enabled)
+
   const p = PRESETS[name]
   if (!p) return
   if (enabled) {
