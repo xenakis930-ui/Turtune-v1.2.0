@@ -56,7 +56,6 @@ export default function App() {
     }
     // Ecualizador: aplicar cambios
     const applyEq = () => {
-      console.warn('[APP] applyEq called')
       resumeEqualizer()
       const st = usePlayerStore.getState()
       setEqualizerEnabled(st.eqEnabled)

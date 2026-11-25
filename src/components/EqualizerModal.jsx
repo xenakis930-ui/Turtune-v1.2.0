@@ -11,7 +11,6 @@ const PRESET_LABELS = {
 }
 
 export default function EqualizerModal() {
-  console.warn('[MODAL] render')
   const [open, setOpen] = useState(false)
   const eqEnabled = usePlayerStore((s) => s.eqEnabled)
   const eqPreset = usePlayerStore((s) => s.eqPreset)
@@ -26,7 +25,7 @@ export default function EqualizerModal() {
     <>
       <button
         type="button"
-        onClick={() => { console.warn('[MODAL] sliders button clicked'); setOpen(true) }}
+        onClick={() => setOpen(true)}
         aria-label="Ecualizador"
         title="Ecualizador"
         className="rounded-md p-2 text-[#8ca0af] transition hover:bg-white/5 hover:text-white"
@@ -41,7 +40,7 @@ export default function EqualizerModal() {
         >
           <div
             className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border border-white/10 bg-[#0c1718] p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+
           >
             <div className="mb-4 flex items-center justify-between">
               <span className="flex items-center gap-2 text-[14px] font-bold text-white">
@@ -63,7 +62,7 @@ export default function EqualizerModal() {
               <span className="text-[12px] font-semibold text-white">Activar EQ</span>
               <button
                 type="button"
-                onClick={() => { console.warn('[MODAL] toggle clicked'); setEqEnabled(!eqEnabled) }}
+                onClick={() => setEqEnabled(!eqEnabled)}
                 className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-0 p-0 transition-colors"
                 style={{ backgroundColor: eqEnabled ? '#15d3a2' : 'rgba(255,255,255,0.1)' }}
                 aria-pressed={eqEnabled}

@@ -39,8 +39,7 @@ export default function ExpandedPlayer() {
       aria-modal="true"
       aria-label="Reproductor expandido"
       className="fixed inset-0 z-[60] flex flex-col bg-[#0a0f14]/95 backdrop-blur-xl expanded-player-enter"
-      onClick={() => console.warn('[EXPANDED] container clicked')}
-    >
+      >
       {/* Cabecera */}
       <div className="flex items-center justify-between px-6 pt-6">
         <button

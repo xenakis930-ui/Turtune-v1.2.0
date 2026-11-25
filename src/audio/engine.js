@@ -116,7 +116,7 @@ export function initEngine() {
 
   // Teclas multimedia + metadatos del sistema (Media Session API) — solo en web/Electron
   // (en Android lo gestiona el servicio nativo TurtuneAudioService).
-  if (!isNative()) { console.warn('[ENGINE] initEqualizer calling'); initEqualizer(audio); console.warn('[ENGINE] initEqualizer done, connected:', isEqualizerConnected()); initMediaSession({ togglePlay, next, previous, seekTo }) }
+  if (!isNative()) { initEqualizer(audio); initMediaSession({ togglePlay, next, previous, seekTo }) }
 }
 
 function clamp01(v) {

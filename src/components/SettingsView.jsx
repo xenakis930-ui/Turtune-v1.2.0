@@ -487,6 +487,16 @@ export default function SettingsView() {
       </p>
     </div>
   )
+  {/* Ecualizador */}
+  <section aria-label="Ecualizador" className="mt-6 overflow-hidden rounded-2xl border border-white/[0.06] bg-[#141f22]">
+    <div className="border-b border-white/5 px-6 py-4">
+      <h2 className="text-[15px] font-extrabold tracking-tight text-white">Ecualizador</h2>
+      <p className="text-[11px] text-[#8ca0ab]">Ajusta el sonido con 7 bandas de frecuencia</p>
+    </div>
+    <div className="px-6 py-5">
+      <EqualizerPanel />
+    </div>
+  </section>
 }
 
 /* ---------- Subcomponentes ---------- */
